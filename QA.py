@@ -16,6 +16,8 @@ import argparse
 import os
 import pandas as pd
 import logging
+logger = logging.getLogger('app.' + __name__)
+
 
 def main():
     parser = argparse.ArgumentParser( description='User inputs to QA script')
@@ -59,6 +61,7 @@ def check_dir_vs_manifest(all_files, manifest):
     #contains_all = manifest[manifest.filename.isin(all_files)]
     #Get all files that are present in directory and missing in manifest. NBD. Add to log!
     missing_files_from_manifest = list(set(all_files) - set(manifest.filename))
+    logger.info("These files are not in manifest but present in the directory: {missing_files_from_manifest}")
     #Get all files that are present in manifest and missing in directory. Bad.
     missing_files = list(set(manifest.filename) - set(all_files))
     return(contains_all, missing_files)
