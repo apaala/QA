@@ -33,10 +33,10 @@ def main():
     print(all_files)
 
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
-    print(matched_files.len())
+    print(matched_files.len)
     print("-----")
-    print(unmatched_files.len())
-    print(manifest.filename.len())
+    print(unmatched_files.len)
+    print(manifest.filename.len)
     #gets files in directory
 
     #match file_names
