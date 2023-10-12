@@ -61,9 +61,12 @@ def check_dir_vs_manifest(all_files, manifest):
     #contains_all = manifest[manifest.filename.isin(all_files)]
     #Get all files that are present in directory and missing in manifest. NBD. Add to log!
     missing_files_from_manifest = list(set(all_files) - set(manifest.filename))
-    logger.warning("These files are not in manifest but present in the directory: %s ",missing_files_from_manifest)
+    if len(missing_files_from_manifest)>0:
+        logger.warning("These files are not in manifest but present in the directory: %s ",missing_files_from_manifest)
     #Get all files that are present in manifest and missing in directory. Bad.
     missing_files = list(set(manifest.filename) - set(all_files))
+    if len(missing_files)>0:
+        logger.error("These files are in manifest but missing from the directory: %s ",missing_files)
     return(contains_all, missing_files)
 
 def compute_md5(filepath):
