@@ -56,6 +56,7 @@ def main():
     #calc md5sum for each file and save to corresponding column
     for i in range(0, len(md5sums_df)):
         tmp_md5sum = compute_md5(md5sums_df.at[i, 'File'])
+        print(tmp_md5sum)
         md5sums_df.at[i,'calculated_md5sum']=tmp_md5sum
     print(md5sums_df)
     
