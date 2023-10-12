@@ -28,6 +28,10 @@ def main():
     manifest = pd.read_csv(options.manifest_path, sep="\t")
     print(manifest.columns)
 
+    #List all files in the directory provided
+    all_files = os.listdir(options.dir_path)
+    print(all_files)
+
     #gets files in directory
 
     #match file_names
