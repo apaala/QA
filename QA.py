@@ -30,7 +30,7 @@ def main():
 
     #List all files in the directory provided
     all_files = os.listdir(options.dir_path)
-    print(all_files)
+    print(len(all_files))
 
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
     print(len(matched_files))
