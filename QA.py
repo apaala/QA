@@ -32,7 +32,7 @@ def main():
     all_files = os.listdir(options.dir_path)
     print(all_files)
 
-    matched_files = check_dir_vs_manifest(all_files, manifest.filename)
+    matched_files = check_dir_vs_manifest(all_files, manifest)
     print(matched_files)
 
     #gets files in directory
