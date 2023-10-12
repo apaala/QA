@@ -26,16 +26,17 @@ def main():
 
     #Read manifest file
     manifest = pd.read_csv(options.manifest_path, sep="\t")
-    print(manifest.columns)
+    print(manifest)
 
     #List all files in the directory provided
     all_files = os.listdir(options.dir_path)
     print(all_files)
 
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
-    print(matched_files)
+    print(matched_files.len())
     print("-----")
-    print(unmatched_files)
+    print(unmatched_files.len())
+    print(manifest.filename.len())
     #gets files in directory
 
     #match file_names
