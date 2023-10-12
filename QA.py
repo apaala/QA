@@ -16,6 +16,7 @@ import argparse
 import os
 import pandas as pd
 import logging
+import hashlib
 logger = logging.getLogger('app.' + __name__)
 
 
