@@ -86,7 +86,7 @@ def compute_md5(filepath):
     """
     Compute md5 checksum for file.
     """
-    sub_logger.info(f"Computing md5 of {filepath}")
+    logger.info(f"Computing md5 of {filepath}")
 
     BLOCKSIZE = 65536
     md5 = None
@@ -100,7 +100,7 @@ def compute_md5(filepath):
                 buf = afile.read(BLOCKSIZE)
         md5 = hasher.hexdigest()
     except Exception as err:
-        sub_logger.exception(f"Unable to compute MD5 for file {filepath} due to error.", exc_info=True)
+        logger.exception(f"Unable to compute MD5 for file {filepath} due to error.", exc_info=True)
 
     return md5
 
