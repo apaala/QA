@@ -34,18 +34,18 @@ def main():
     all_files = os.listdir(options.dir_path)
     print(len(all_files))
 
+    #Get matched and unmatched file names. Error if file in manifest not present in directory.
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
     
+    #Tests
     print(len(matched_files))
     print("-----")
     print(len(unmatched_files))
 
-    #gets files in directory
-
-    #match file_names
-
-    #match extensions
-
+    #generate md5sums
+    #add logic to not get here if file names dont match
+    md5sums_df = pd.DataFrame("File": manifest.filename, "calculated_md5sum": "")
+    print(md5sums_df)
     #check md5checksums
 
     #get_technique_info
