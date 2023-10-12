@@ -44,7 +44,7 @@ def main():
 
     #generate md5sums
     #add logic to not get here if file names dont match
-    md5sums_df = pd.DataFrame("File": manifest.filename, "calculated_md5sum": "")
+    md5sums_df = pd.DataFrame({"File": manifest.filename, "calculated_md5sum": ""})
     print(md5sums_df)
     #check md5checksums
 
