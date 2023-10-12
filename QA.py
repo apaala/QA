@@ -32,6 +32,9 @@ def main():
     all_files = os.listdir(options.dir_path)
     print(all_files)
 
+    matched_files = check_dir_vs_manifest(all_files, manifest.filename)
+    print(matched_files)
+
     #gets files in directory
 
     #match file_names
@@ -44,7 +47,9 @@ def main():
 
     #Check required files are present
     
-
+def check_dir_vs_manifest(all_files, manifest):
+    contains_all = manifest['filename'].isin(all_files).all()
+    return(contains_all)
 
 def compute_md5(filepath):
     """
