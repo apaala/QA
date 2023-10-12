@@ -26,17 +26,18 @@ def main():
 
     #Read manifest file
     manifest = pd.read_csv(options.manifest_path, sep="\t")
-    print(manifest)
+    print(len(manifest))
 
     #List all files in the directory provided
     all_files = os.listdir(options.dir_path)
     print(len(all_files))
 
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
+    
     print(len(matched_files))
     print("-----")
     print(len(unmatched_files))
-    print(manifest.filename)
+
     #gets files in directory
 
     #match file_names
@@ -52,10 +53,14 @@ def main():
 def check_dir_vs_manifest(all_files, manifest):
     #contains_all = manifest['filename'].isin(all_files).all()
     #if contains_all == False:
+    #Get all files that are present in directory and in manifest
     contains_all = [x for x in all_files if x not in manifest.filename]
     #missing_files = [x for x in manifest.filename if x not in all_files]
     #contains_all = manifest[manifest.filename.isin(all_files)]
-    missing_files = list(set(all_files) - set(manifest.filename))
+    #Get all files that are present in directory and missing in manifest. NBD. Add to log!
+    missing_files_from_manifest = list(set(all_files) - set(manifest.filename))
+    #Get all files that are present in manifest and missing in directory. Bad.
+    missing_files = list(set(manifest.filename) - set(all_files))
     return(contains_all, missing_files)
 
 def compute_md5(filepath):
