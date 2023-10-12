@@ -36,7 +36,7 @@ def main():
     print(len(matched_files))
     print("-----")
     print(len(unmatched_files))
-    print(len(manifest.filename))
+    print(manifest.filename)
     #gets files in directory
 
     #match file_names
