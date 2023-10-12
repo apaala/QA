@@ -43,12 +43,20 @@ def main():
     print(len(unmatched_files))
 
     #generate md5sums
-    #add logic to not get here if file names dont match
-    md5sums_df = pd.DataFrame({"File": manifest.filename, "calculated_md5sum": ""})
-    
     #md5sums_df.File = os.path.join( options.dir_path, md5sums_df.File)
     md5sums_df['File'] = options.dir_path + md5sums_df['File'].astype(str)
     print(md5sums_df)
+    print("----")
+    #add logic to not get here if file names dont match
+    md5sums_df = pd.DataFrame({"File": manifest.filename, "calculated_md5sum": ""})
+
+    #calc md5sum for each file and save to corresponding column
+    for i in range(0, len(md5sums_df):
+        tmp_md5sum = compute_md5(md5sums_df.i.File)
+        md5sums_df.i.calculated_md5sum = tmp_md5sum
+    print(md5sums_df)
+    
+    
     #check md5checksums
 
     #get_technique_info
