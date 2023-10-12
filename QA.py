@@ -48,7 +48,9 @@ def main():
     #Check required files are present
     
 def check_dir_vs_manifest(all_files, manifest):
-    contains_all = manifest['filename'].isin(all_files).all()
+    #contains_all = manifest['filename'].isin(all_files).all()
+    #if contains_all == False:
+    contains_all = [x for x in all_files if x not in manifest.filename]
     return(contains_all)
 
 def compute_md5(filepath):
