@@ -46,22 +46,22 @@ def main():
     #generate md5sums
     
     #add logic to not get here if file names dont match
-    md5sums_df = pd.DataFrame({"File": manifest.filename,"manifest_filename": manifest.filename,"manifest_checksum": manifest.checksum, "calculated_md5sum": ""})
+    md5sums_df = pd.DataFrame({"full_path": manifest.filename,"manifest_filename": manifest.filename,"manifest_checksum": manifest.checksum, "calculated_md5sum": ""})
 
     #md5sums_df.File = os.path.join( options.dir_path, md5sums_df.File)
-    md5sums_df['File'] = options.dir_path + md5sums_df['File'].astype(str)
+    md5sums_df['full_path'] = options.dir_path + md5sums_df['full_path'].astype(str)
     print(md5sums_df)
     print("----")
 
     #calc md5sum for each file and save to corresponding column
-    for i in range(0, len(md5sums_df)):
-        tmp_md5sum = compute_md5(md5sums_df.at[i, 'File'])
-        print(tmp_md5sum)
-        md5sums_df.at[i,'calculated_md5sum']=tmp_md5sum
-        if md5sums_df.at[i, 'manifest_checksum']== tmp_md5sum:
-            print ("match!")
-    print(md5sums_df)
-    
+    #for i in range(0, len(md5sums_df)):
+    #    tmp_md5sum = compute_md5(md5sums_df.at[i, 'full_path'])
+    #    print(tmp_md5sum)
+    #    md5sums_df.at[i,'calculated_md5sum']=tmp_md5sum
+    #    if md5sums_df.at[i, 'manifest_checksum']== tmp_md5sum:
+    #        print ("match!")
+    #print(md5sums_df)
+    check_md5sums = match_md5sums_to_manifest(md5sums_df)
     
     #check md5checksums
 
@@ -85,6 +85,37 @@ def check_dir_vs_manifest(all_files, manifest):
     if len(missing_files)>0:
         logger.error("These files are in manifest but missing from the directory: %s ",missing_files)
     return(contains_all, missing_files)
+
+def match_md5sums_to_manifest(md5sums_df):
+    #calc md5sum for each file and match to corresponding column in manifest.
+    logger.debug("In confirm_checksums_match().")
+
+    ####
+    checksums_ok = False
+    error_message = "does not match value provided in the manifest"
+
+    # Compute checksum on each submitted file.
+    md5sums_df['calculated_md5sum'] = file_dataframe['full_path'].apply(compute_md5)
+    
+    # Create mask to find mismatching observed and expected checksums.
+    df_mask = (file_dataframe['calculated_md5sum'] != file_dataframe['manifest_checksum'])
+    
+    # Get a list of row indices where observed checksums do not match the 
+    # checksum listed in the manifest.
+    rows_mismatched = file_dataframe[df_mask].index.tolist()
+
+    if len(rows_mismatched) > 0:
+        # One or more submitted file's checksum does not match checksum listed
+        # in manifest.
+
+        # Create human readable error messages.
+        logger.debug("In confirm_checksums_match().")
+
+        #send_file_validation_email(errors, submission_id, submitter)
+    else:
+        checksums_ok = True
+
+    return checksums_ok
 
 def compute_md5(filepath):
     """
