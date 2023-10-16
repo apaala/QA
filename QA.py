@@ -62,7 +62,7 @@ def main():
     #        print ("match!")
     #print(md5sums_df)
     check_md5sums = match_md5sums_to_manifest(md5sums_df)
-    
+    print(check_md5sums)
     #check md5checksums
 
     #get_technique_info
@@ -89,7 +89,7 @@ def check_dir_vs_manifest(all_files, manifest):
 def match_md5sums_to_manifest(md5sums_df):
     #calc md5sum for each file and match to corresponding column in manifest.
     logger.debug("In confirm_checksums_match().")
-
+    print( "in checking")
     ####
     checksums_ok = False
     error_message = "does not match value provided in the manifest"
