@@ -95,14 +95,14 @@ def match_md5sums_to_manifest(md5sums_df):
     error_message = "does not match value provided in the manifest"
 
     # Compute checksum on each submitted file.
-    md5sums_df['calculated_md5sum'] = file_dataframe['full_path'].apply(compute_md5)
+    md5sums_df['calculated_md5sum'] = md5sums_df['full_path'].apply(compute_md5)
     
     # Create mask to find mismatching observed and expected checksums.
-    df_mask = (file_dataframe['calculated_md5sum'] != file_dataframe['manifest_checksum'])
+    df_mask = (md5sums_df['calculated_md5sum'] != md5sums_df['manifest_checksum'])
     
     # Get a list of row indices where observed checksums do not match the 
     # checksum listed in the manifest.
-    rows_mismatched = file_dataframe[df_mask].index.tolist()
+    rows_mismatched = md5sums_df[df_mask].index.tolist()
 
     if len(rows_mismatched) > 0:
         # One or more submitted file's checksum does not match checksum listed
