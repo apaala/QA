@@ -53,22 +53,21 @@ def main():
     print(md5sums_df)
     print("----")
 
-    #calc md5sum for each file and save to corresponding column
-    #for i in range(0, len(md5sums_df)):
-    #    tmp_md5sum = compute_md5(md5sums_df.at[i, 'full_path'])
-    #    print(tmp_md5sum)
-    #    md5sums_df.at[i,'calculated_md5sum']=tmp_md5sum
-    #    if md5sums_df.at[i, 'manifest_checksum']== tmp_md5sum:
-    #        print ("match!")
-    #print(md5sums_df)
-    check_md5sums = match_md5sums_to_manifest(md5sums_df)
-    print(check_md5sums)
+    ###commented checksun checking to test technique
+    ###check_md5sums = match_md5sums_to_manifest(md5sums_df)
+    ###print(check_md5sums)
     #check md5checksums
-
+    techniques = get_required_file_list(options.technique)
     #get_technique_info
 
     #Check required files are present
     
+def get_required_file_list(techniques):
+    technique = pd.read_csv(techniques, sep=",")
+    print(technique)
+    return(technique)
+
+
 def check_dir_vs_manifest(all_files, manifest):
     #contains_all = manifest['filename'].isin(all_files).all()
     #if contains_all == False:
