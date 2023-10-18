@@ -61,14 +61,15 @@ def main():
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
     print(master_techniques)
-    techniques = get_required_file_list(options.technique)
+    required_files, optional_files = get_required_file_list(options.technique, master_techniques)
     #get_technique_info
 
     #Check required files are present
     
-def get_required_file_list(techniques):
+def get_technique_file_list(techniques, master):
     technique = pd.read_csv(techniques, sep=",")
     print(technique)
+    print (master[master.technique.isin(technique.name)])
     return(technique)
 
 def open_techniques_with_pathlib(file_name):
