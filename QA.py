@@ -17,7 +17,9 @@ import os
 import pandas as pd
 import logging
 import hashlib
+from pathlib import Path
 logger = logging.getLogger('app.' + __name__)
+
 
 
 def main():
@@ -57,6 +59,8 @@ def main():
     ###check_md5sums = match_md5sums_to_manifest(md5sums_df)
     ###print(check_md5sums)
     #check md5checksums
+    master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
+    print(master_techniques)
     techniques = get_required_file_list(options.technique)
     #get_technique_info
 
@@ -67,6 +71,12 @@ def get_required_file_list(techniques):
     print(technique)
     return(technique)
 
+def open_techniques_with_pathlib(file_name):
+   script_dir = Path(__file__).resolve().parent
+   file_path = script_dir / file_name
+   with open(file_path, 'r') as file:
+      content = file.read()
+   return content
 
 def check_dir_vs_manifest(all_files, manifest):
     #contains_all = manifest['filename'].isin(all_files).all()
