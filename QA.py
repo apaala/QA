@@ -61,7 +61,7 @@ def main():
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
     print(master_techniques)
-    required_files, optional_files = get_required_file_list(options.technique, master_techniques)
+    required_files, optional_files = get_technique_file_list(options.technique, master_techniques)
     #get_technique_info
 
     #Check required files are present
