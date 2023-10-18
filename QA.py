@@ -74,7 +74,7 @@ def get_required_file_list(techniques):
 def open_techniques_with_pathlib(file_name):
    script_dir = Path(__file__).resolve().parent
    file_path = script_dir / file_name
-   content = pd.read_csv(techniques, sep=",")
+   content = pd.read_csv(file_path, sep=",")
    return content
 
 def check_dir_vs_manifest(all_files, manifest):
