@@ -61,15 +61,30 @@ def main():
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
     print(master_techniques)
-    required_files, optional_files = get_technique_file_list(options.technique, master_techniques)
+    file_list = get_technique_file_list(options.technique, master_techniques)
+    required_files = check_tech_assoc_files(manifest, file_list, options.technique)
+    # Get the aliquot and use it to find file names. pass it manifest, file_list, techniques
     #get_technique_info
 
     #Check required files are present
-    
+
+def check_tech_assoc_files(manifest, file_list, techniques):
+    technique = pd.read_csv(techniques, sep=",")
+    total_file_count = length(manifest.filename)
+    print("total files---")
+    print(total_file_count)
+    for t in technique:
+        tname = t.name
+        print(tname)
+        aliquot = t.aliquot
+        print(aliquot)
+        print("-----")
+    return total_file_count
+
 def get_technique_file_list(techniques, master):
     technique = pd.read_csv(techniques, sep=",")
     print(technique)
-    print (master[master.technique.isin(technique.name)])
+    file_list = master[master.technique.isin(technique.name)]
     return(technique)
 
 def open_techniques_with_pathlib(file_name):
