@@ -74,6 +74,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     print("total files---")
     print(total_file_count)
     for t in technique:
+        print(t)
         tname = t.loc['name']
         print(tname)
         aliquot = t.loc['aliquot']
