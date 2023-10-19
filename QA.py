@@ -70,7 +70,7 @@ def main():
 
 def check_tech_assoc_files(manifest, file_list, techniques):
     technique = pd.read_csv(techniques, sep=",")
-    total_file_count = length(manifest.filename)
+    total_file_count = len(manifest.filename)
     print("total files---")
     print(total_file_count)
     for t in technique:
