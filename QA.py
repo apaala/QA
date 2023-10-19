@@ -79,6 +79,8 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         aliquot = row['aliquot']
         print(aliquot)
         print("-----")
+        man_files = manifest[manifest['filename'].str.contains(aliquot)]
+        print(man_files.filename)
     return total_file_count
 
 def get_technique_file_list(techniques, master):
