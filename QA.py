@@ -61,6 +61,8 @@ def main():
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
     print(master_techniques)
+    ##Should be a loop for multiple techniques and aliquots???
+    #####
     file_list = get_technique_file_list(options.technique, master_techniques)
     required_files = check_tech_assoc_files(manifest, file_list, options.technique)
     # Get the aliquot and use it to find file names. pass it manifest, file_list, techniques
@@ -68,11 +70,32 @@ def main():
 
     #Check required files are present
 
+def check_raw_datatype(file_list, required, optional, aliquot_files):
+    #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
+    lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
+    return(lanes_substring)
+
+
 def check_tech_assoc_files(manifest, file_list, techniques):
     technique = pd.read_csv(techniques, sep=",")
     total_file_count = len(manifest.filename)
+    lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print("total files---")
     print(total_file_count)
+    print(file_list)
+    #Define file name substring to look for
+    #Assuming all raw files are fastq
+    # if unique(file_list.data_type) == "raw":
+    #     print("Files are raw... expecting Fastq")
+    #     required_substring = ["_R1", "_R2"]
+    #     optional_substring = ["I1", "I2"]
+    #     format_substring = ["fastq", "fq"]
+    #     check = check_raw_datatype(file_list,required_substring, optional_substring, aliquot_name)
+    #     #Get all fastq files
+    # elif unique(file_list.data_type) == "align":
+    #     print("Files are raw... expecting alignment bim/bed/fam")
+    #     format_substring = ["bim", "bed","fam"]
+    
     for index, row in technique.iterrows():
         tname = row['name']
         print(tname)
@@ -81,6 +104,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         print("-----")
         man_files = manifest[manifest['filename'].str.contains(aliquot)]
         print(man_files.filename)
+        
     return total_file_count
 
 def get_technique_file_list(techniques, master):
