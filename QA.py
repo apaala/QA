@@ -123,9 +123,9 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
             #check if required files are present
             required_files = check_R1_R2_fastq(lane_files, lane)
             optional_files = check_I1_I2_fastq(lane_files, lane)
-        print("~~~~")
-        print(optional_files)
-        print(required_files)
+            print("~~~~")
+            print(optional_files)
+            print(required_files)
         #If # files == 4, check for R1/2 
         elif len(lane_files) ==2:
             required_files = check_R1_R2_fastq(lane_files, lane)
