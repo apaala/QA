@@ -80,14 +80,10 @@ def check_R1_R2_fastq(lane_files, lane):
 
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
-        print ( "required files are")
-        #print(checkr)
         required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
-        else:
-            print("extension checked")
     logger.info("In check_R1_R2_fastq(). Following files passed: %s ",ext_req_checked)
     return(ext_req_checked)
 
@@ -101,15 +97,10 @@ def check_I1_I2_fastq(lane_files, lane):
 
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
-        #print ( "optional files are")
-        #print(checkr)
         required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
-        else:
-            print("extension checked")
-            #print(ext_req_checked)
     logger.info("In check_I1_I2_fastq(). Following files passed: %s ",ext_req_checked)
     return(ext_req_checked)
 
