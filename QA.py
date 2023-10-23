@@ -73,8 +73,8 @@ def main():
 def raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
-    print( " in sub for 4 files")
-    return(lanes_substring)
+    print(" in sub for 4 files")
+    return("yes")
 
 
 def check_tech_assoc_files(manifest, file_list, techniques):
