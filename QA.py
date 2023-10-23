@@ -81,7 +81,9 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     for lane in lanes_substring:
         print(lane)
         lane_files = manifest[manifest['filename'].str.contains(lane)]
-        print(lane_files)
+        #check if required files are present
+        required_files = lane_files[lane_files['filename'].str.contains(required)]
+        print(required_files)
     return("yes")
 
 
