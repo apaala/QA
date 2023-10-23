@@ -242,8 +242,8 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
-            if not check_raw_files['bool'].all():
-
+            if not check_raw_files['req'].all():
+                print("TRUE")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
