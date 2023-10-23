@@ -155,7 +155,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
         lane_checks.append(row)
     print(lane_checks)
         #check if both files are present and have the right extention
-    return(pd.DataFrame(lane_checks))
+    return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Optional"}))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
@@ -242,6 +242,8 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
+            if not check_raw_files['bool'].all():
+
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
