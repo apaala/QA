@@ -87,8 +87,9 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     #all techniques that are R1 R2 I1 and I2
     raw_4_file_format_techniques = [ "10X Genomics Multiome;RNAseq", "10X Genomics Immune profiling;VDJ",
      "10X Genomics Immune profilling;GEX", "10xv2", "10xv3", "10xmultiome_cell_hash;RNA"]
+    tech = file_list.technique.unique()
 
-    if data_type == 'raw' and file_list.technique.unique in raw_4_file_format_techniques:
+    if data_type == 'raw' and tech in raw_4_file_format_techniques:
         print(file_list.technique.unique())
         print("Files expected at")
         print(file_list.file_format)
