@@ -78,16 +78,17 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     optional = ["I1", "I2"]
     format = ["fastq", "fq"]
     # For every aliquot there should be at least R1 and R2
+    req = '|'.join(r"\b{}\b".format(x) for x in required)
     for lane in lanes_substring:
         print(lane)
         lane_files = manifest[manifest['filename'].str.contains(lane)]
         #check if required files are present
         #required_files = lane_files[pd.DataFrame(lane_files.filename.tolist()).isin(required)]
-        required_files = lane_files.filename.apply(lambda x: any(item for item in lane_files if item in x))
-        df1 = lane_files[required_files]
-        #required_files = lane_files[lane_files['filename'].str.contains(f)]
+        #required_files = lane_files.filename.apply(lambda x: any(item for item in lane_files if item in x))
+        #df1 = lane_files[required_files]
+        required_files = lane_files[lane_files['filename'].str.contains(req)]
         print ( "required files are")
-        print(df1)
+        print(required_files)
     return("yes")
 
 
