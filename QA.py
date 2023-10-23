@@ -248,6 +248,8 @@ def check_tech_assoc_files(manifest, file_list, techniques):
                 logger.error("All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
             if check_raw_files['Opt'].all():
                 logger.info("All Optional Files for {tname} and Aliquot {aliquot} are present")
+            else:
+                logger.warning("All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
