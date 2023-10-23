@@ -74,7 +74,10 @@ def check_R1_R2_fastq(lane_files, lane):
     #check for R1 and R2 fastq files for raw techniques
     #check if required files are present
     required_files = pd.DataFrame()
+    
+    #Lists with corresponding substrings
     required = ["R1", "R2"]
+
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
         print ( "required files are")
@@ -85,17 +88,20 @@ def check_R1_R2_fastq(lane_files, lane):
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
         else:
             print("extension checked")
-            #print(ext_req_checked)
+    logger.info("In check_R1_R2_fastq(). Following files passed: %s ",ext_req_checked)
     return(ext_req_checked)
 
 def check_I1_I2_fastq(lane_files, lane):
     #check for I1 and I2 fastq files for raw techniques
     #check if required files are present
     required_files = pd.DataFrame()
+    
+    #List with corresponding substrings
     required = ["I1", "I2"]
+
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
-        print ( "optional files are")
+        #print ( "optional files are")
         #print(checkr)
         required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
@@ -104,6 +110,7 @@ def check_I1_I2_fastq(lane_files, lane):
         else:
             print("extension checked")
             #print(ext_req_checked)
+    logger.info("In check_I1_I2_fastq(). Following files passed: %s ",ext_req_checked)
     return(ext_req_checked)
 
 def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
@@ -120,11 +127,6 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
     #Lanes per aliquot
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     logger.debug("In check_raw_4_file_format_techniques().")
-
-    #Lists with corresponding substrings
-    #required = ["R1", "R2"]
-    #optional = ["I1", "I2"]
-    #format = ["fastq", "fq"]
 
     #Capture per lane file checks
     lane_checks = []
