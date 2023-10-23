@@ -103,7 +103,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         print(aliquot)
         print("-----")
         man_files = manifest[manifest['filename'].str.contains(aliquot)]
-        if file_list.data_type == "raw":
+        if unique(file_list.data_type) == "raw":
             print("files are raw")
         print(man_files.filename)
         
