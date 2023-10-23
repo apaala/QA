@@ -74,6 +74,14 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print(" in sub for 4 files")
+    required = ["R1", "R2"]
+    optional = ["I1", "I2"]
+    format = ["fastq", "fq"]
+    # For every aliquot there should be at least R1 and R2
+    for lane in lanes_substring:
+        print(lane)
+        lane_files = manifest[manifest['filename'].str.contains(l)]
+        print(lane_files)
     return("yes")
 
 
