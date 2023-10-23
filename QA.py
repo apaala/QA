@@ -114,7 +114,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     optional = ["I1", "I2"]
     format = ["fastq", "fq"]
     # For every aliquot there should be at least R1 and R2
-    req = '|'.join(r"\b{}\b".format(x) for x in required)
+    #req = '|'.join(r"\b{}\b".format(x) for x in required)
     for lane in lanes_substring:
         print(lane)
         lane_files = manifest[manifest['filename'].str.contains(lane)]
@@ -126,8 +126,74 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
         print("~~~~")
         print(optional_files)
         print(required_files)
+        #If # files == 4, check for R1/2 
+        elif len(lane_files) ==2:
+            required_files = check_R1_R2_fastq(lane_files, lane)
+        #If # files anything else error
+        else:
+            print("Mismatched # of files found")
         #check if both files are present and have the right extention
+    return("yes")
 
+def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
+    #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
+    lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
+    print(" in sub for 3 files")
+    #params for nuc_hash
+    required = ["R1", "R2"]
+    format = ["fastq", "fq"]
+    # For every aliquot there should be at least R1 and R2
+    #req = '|'.join(r"\b{}\b".format(x) for x in required)
+    for lane in lanes_substring:
+        print(lane)
+        lane_files = manifest[manifest['filename'].str.contains(lane)]
+        #If # files == 4, check for R1/2 and I1/2
+        if len(lane_files) ==3:
+            #check if required files are present
+            required_files = check_R1_R2_fastq(lane_files, lane)
+            required_hash = "set up params"
+        print("~~~~")
+        print(required_files)
+        #If # files == 4, check for R1/2 
+        elif len(lane_files) ==2:
+            required_files = check_R1_R2_fastq(lane_files, lane)
+        #If # files anything else error
+        else:
+            print("Mismatched # of files found")
+        #check if both files are present and have the right extention
+    return("yes")
+
+def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
+    #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
+    lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
+    print(" in sub for 4 files")
+    required = ["R1", "R2"]
+    optional = ["I1", "I2"]
+    format = ["fastq", "fq"]
+    # For every aliquot there should be at least R1 and R2
+    #req = '|'.join(r"\b{}\b".format(x) for x in required)
+    for lane in lanes_substring:
+        print(lane)
+        lane_files = manifest[manifest['filename'].str.contains(lane)]
+        #If # files == 5, check for R1/2/3 and I1/2
+        if len(lane_files) ==5:
+            #check if required files are present
+            required_files = check_R1_R2_fastq(lane_files, lane)
+            optional_files = check_I1_I2_fastq(lane_files, lane)
+            optional_R3 = lane_files[lane_files['filename'].str.contains("R3")]
+        print("~~~~")
+        print(optional_files)
+        print(required_files)
+        #If # files == 4, check for R1/2 
+        elif len(lane_files) == 4:
+            required_files = check_R1_R2_fastq(lane_files, lane)
+            optional_files = check_I1_I2_fastq(lane_files, lane)
+        elif len(lane_files) ==2:
+            required_files = check_R1_R2_fastq(lane_files, lane)
+        #If # files anything else error
+        else:
+            print("Mismatched # of files found")
+        #check if both files are present and have the right extention
     return("yes")
 
 
@@ -142,25 +208,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     #all techniques that are R1 R2 I1 and I2
     raw_4_file_format_techniques = [ "10X Genomics Multiome;RNAseq", "10X Genomics Immune profiling;VDJ",
      "10X Genomics Immune profilling;GEX", "10xv2", "10xv3", "10xmultiome_cell_hash;RNA"]
-    tech = file_list.technique.unique()
-
-    #if data_type == 'raw' and tech in raw_4_file_format_techniques:
-    #    print(file_list.technique.unique())
-    #    print("Files expected at")
-    #    print(file_list.file_format)
-
-    #Define file name substring to look for
-    #Assuming all raw files are fastq
-    # if unique(file_list.data_type) == "raw":
-    #     print("Files are raw... expecting Fastq")
-    #     required_substring = ["_R1", "_R2"]
-    #     optional_substring = ["I1", "I2"]
-    #     format_substring = ["fastq", "fq"]
-    #     check = check_raw_datatype(file_list,required_substring, optional_substring, aliquot_name)
-    #     #Get all fastq files
-    # elif unique(file_list.data_type) == "align":
-    #     print("Files are raw... expecting alignment bim/bed/fam")
-    #     format_substring = ["bim", "bed","fam"]
+    raw_5_file_format_techniques =[ "10X Genomics Multiome;ATAC-seq", "10xmultiome_cell_hash;ATAC"]
     
     for index, row in technique.iterrows():
         tname = row['name']
@@ -175,6 +223,10 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             print("Files expected are")
             #print(file_list.file_format)
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
+        elif data_type == 'raw' and tname in raw_5_file_format_techniques:
+            check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
+        elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
+            check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot)
         else:
             print("files are not raw or in 4 format raw")
             #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
