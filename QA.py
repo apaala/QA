@@ -120,7 +120,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             print(tname)
             print("Files expected are")
             #print(file_list.file_format)
-            check_raw_files = raw_4_file_format_techniques(man_files.filename, aliquot)
+            check_raw_files = raw_4_file_format_techniques(file_type, man_files.filename, aliquot)
         else:
             print("files are not raw or in 4 format raw")
             #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
