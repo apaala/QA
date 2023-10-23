@@ -84,7 +84,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
         #check if required files are present
         #required_files = lane_files[pd.DataFrame(lane_files.filename.tolist()).isin(required)]
         required_files = lane_files.filename.apply(lambda x: any(item for item in lane_files if item in x))
-        df1 = df[required_files]
+        df1 = lane_files[required_files]
         #required_files = lane_files[lane_files['filename'].str.contains(f)]
         print ( "required files are")
         print(df1)
