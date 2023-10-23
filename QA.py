@@ -156,7 +156,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
             print("Mismatched # of files found")
             row.append(req)
             row.append(opt)
-        lane_checks = lane_checks.append(row)
+        lane_checks.append(row)
     print(lane_checks)
         #check if both files are present and have the right extention
     return("yes")
