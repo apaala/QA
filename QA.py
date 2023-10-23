@@ -80,7 +80,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     # For every aliquot there should be at least R1 and R2
     for lane in lanes_substring:
         print(lane)
-        lane_files = manifest[manifest['filename'].str.contains(l)]
+        lane_files = manifest[manifest['filename'].str.contains(lane)]
         print(lane_files)
     return("yes")
 
