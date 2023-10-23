@@ -89,7 +89,14 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
             print ( "required files are")
             #print(checkr)
             required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
+            ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
+            if len(required_files) == 2 and len(ext_req_checked) !=2:
+                ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
+            else:
+                print(ext_req_checked)
         print(required_files)
+        #check if both files are present and have the right extention
+
     return("yes")
 
 
