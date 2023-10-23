@@ -83,15 +83,10 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
         print(lane)
         lane_files = manifest[manifest['filename'].str.contains(lane)]
         #check if required files are present
-        #required_files = lane_files[pd.DataFrame(lane_files.filename.tolist()).isin(required)]
-        #required_files = lane_files.filename.apply(lambda x: any(item for item in lane_files if item in x))
-        #df1 = lane_files[required_files]
-        #required_files = lane_files[lane_files['filename'].str.contains(req)]
-        required_files = lane_files.loc[(lane_files.apply(lambda x: any(m in str(v).lower() 
-                               for v in x.values 
-                               for m in required), axis=1))]
-        print ( "required files are")
-        print(required_files)
+        for r in required:
+            checkr = lane_files[lane_files['filename'].str.contains(r)]
+            print ( "required files are")
+            print(checkr)
     return("yes")
 
 
