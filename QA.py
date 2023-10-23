@@ -84,6 +84,14 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     print(total_file_count)
     print(file_list)
     data_type = file_list['data_type'].unique()
+    #all techniques that are R1 R2 I1 and I2
+    raw_4_file_format_techniques = [ "10X Genomics Multiome;RNAseq", "10X Genomics Immune profiling;VDJ",
+     "10X Genomics Immune profilling;GEX", "10xv2", "10xv3", "10xmultiome_cell_hash;RNA"]
+
+    if data_type == 'raw' and technique.technique.unique in raw_4_file_format_techniques:
+        print(technique.technique.unique())
+        print("Files expected at")
+        print(technique.file_format)
 
     #Define file name substring to look for
     #Assuming all raw files are fastq
@@ -107,6 +115,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         man_files = manifest[manifest['filename'].str.contains(aliquot)]
         if data_type == "raw":
             print("files are raw")
+            #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
         print(man_files.filename)
         
     return total_file_count
