@@ -115,7 +115,7 @@ def get_technique_file_list(techniques, master):
     technique = pd.read_csv(techniques, sep=",")
     print(technique)
     file_list = master[master.technique.isin(technique.name)]
-    return(technique)
+    return(file_list)
 
 def open_techniques_with_pathlib(file_name):
    script_dir = Path(__file__).resolve().parent
