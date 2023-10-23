@@ -83,7 +83,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     print("total files---")
     print(total_file_count)
     print(file_list)
-    data_type = file_list[data_type].unique()
+    data_type = file_list['data_type'].unique()
 
     #Define file name substring to look for
     #Assuming all raw files are fastq
