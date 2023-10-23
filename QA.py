@@ -56,8 +56,8 @@ def main():
     print("----")
 
     ###commented checksun checking to test technique
-    ###check_md5sums = match_md5sums_to_manifest(md5sums_df)
-    ###print(check_md5sums)
+    check_md5sums = match_md5sums_to_manifest(md5sums_df)
+    #print(check_md5sums)
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
     #print(master_techniques)
