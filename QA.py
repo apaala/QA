@@ -139,17 +139,13 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
             else:
                 opt = False
                 row.append(opt)
-            print("~~~~")
-            print(optional_files)
-            print(required_files)
-        #If # files == 4, check for R1/2 
+        #If # files == 2, check for R1/2 
         elif len(lane_files) ==2:
             required_files = check_R1_R2_fastq(lane_files, lane)
             if len(required_files) == 2:
                 req = True
                 row.append(req)
             else:
-                opt = False
                 row.append(opt)
         #If # files anything else error
         else:
@@ -159,7 +155,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
         lane_checks.append(row)
     print(lane_checks)
         #check if both files are present and have the right extention
-    return("yes")
+    return(pd.DataFrame(lane_checks))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
@@ -253,7 +249,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         else:
             print("files are not raw or in 4 format raw")
             #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
-        print(man_files.filename)
+        #print(man_files.filename)
         
     return total_file_count
 
