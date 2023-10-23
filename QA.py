@@ -31,11 +31,11 @@ def main():
 
     #Read manifest file
     manifest = pd.read_csv(options.manifest_path, sep="\t")
-    print(len(manifest))
+    #print(len(manifest))
 
     #List all files in the directory provided
     all_files = os.listdir(options.dir_path)
-    print(len(all_files))
+    #print(len(all_files))
 
     #Get matched and unmatched file names. Error if file in manifest not present in directory.
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
@@ -52,7 +52,7 @@ def main():
 
     #md5sums_df.File = os.path.join( options.dir_path, md5sums_df.File)
     md5sums_df['full_path'] = options.dir_path + md5sums_df['full_path'].astype(str)
-    print(md5sums_df)
+    #print(md5sums_df)
     print("----")
 
     ###commented checksun checking to test technique
@@ -60,7 +60,7 @@ def main():
     ###print(check_md5sums)
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
-    print(master_techniques)
+    #print(master_techniques)
     ##Should be a loop for multiple techniques and aliquots???
     #####
     file_list = get_technique_file_list(options.technique, master_techniques)
@@ -84,7 +84,7 @@ def check_R1_R2_fastq(lane_files, lane):
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
-    logger.info("In check_R1_R2_fastq(). Following files passed: %s ",ext_req_checked)
+    logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     return(ext_req_checked)
 
 def check_I1_I2_fastq(lane_files, lane):
@@ -101,7 +101,7 @@ def check_I1_I2_fastq(lane_files, lane):
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
-    logger.info("In check_I1_I2_fastq(). Following files passed: %s ",ext_req_checked)
+    logger.info("In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     return(ext_req_checked)
 
 def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
