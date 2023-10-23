@@ -70,7 +70,7 @@ def main():
 
     #Check required files are present
 
-def raw_4_file_format_techniques(file_list, manifest, aliquot_files):
+def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print(" in sub for 4 files")
@@ -120,7 +120,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             print(tname)
             print("Files expected are")
             #print(file_list.file_format)
-            check_raw_files = raw_4_file_format_techniques(file_list, man_files, aliquot)
+            check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
         else:
             print("files are not raw or in 4 format raw")
             #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
