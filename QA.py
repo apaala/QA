@@ -93,6 +93,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
             if len(required_files) == 2 and len(ext_req_checked) !=2:
                 ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
             else:
+                print(extension checked)
                 print(ext_req_checked)
         print(required_files)
         #check if both files are present and have the right extention
