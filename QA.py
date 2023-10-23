@@ -90,10 +90,10 @@ def check_tech_assoc_files(manifest, file_list, techniques):
      "10X Genomics Immune profilling;GEX", "10xv2", "10xv3", "10xmultiome_cell_hash;RNA"]
     tech = file_list.technique.unique()
 
-    if data_type == 'raw' and tech in raw_4_file_format_techniques:
-        print(file_list.technique.unique())
-        print("Files expected at")
-        print(file_list.file_format)
+    #if data_type == 'raw' and tech in raw_4_file_format_techniques:
+    #    print(file_list.technique.unique())
+    #    print("Files expected at")
+    #    print(file_list.file_format)
 
     #Define file name substring to look for
     #Assuming all raw files are fastq
@@ -120,7 +120,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             print(tname)
             print("Files expected are")
             #print(file_list.file_format)
-            check_raw_files = raw_4_file_format_techniques(file_list, man_files.filename, aliquot)
+            check_raw_files = raw_4_file_format_techniques(file_list, man_files, aliquot)
         else:
             print("files are not raw or in 4 format raw")
             #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
