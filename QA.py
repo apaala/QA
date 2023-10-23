@@ -106,13 +106,25 @@ def check_I1_I2_fastq(lane_files, lane):
             #print(ext_req_checked)
     return(ext_req_checked)
 
-def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
-    #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
+def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
+    """ This function checks for techniques that produce 4 files. 
+    These Files are expected to have specific substrings.
+    Input: 1) List of expected files, 
+           2) Manifest for aliquot 
+           3) aliquot string (not using currently may want to later.)
+    Output: DF with lane and T/F for required and optional files.
+    """
+    #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. 
+    #Confirmed assumption with Suvvi on 10/19.
+
+    #Lanes per aliquot
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
-    print(" in sub for 4 files")
-    required = ["R1", "R2"]
-    optional = ["I1", "I2"]
-    format = ["fastq", "fq"]
+    logger.debug("In check_raw_4_file_format_techniques().")
+
+    #Lists with corresponding substrings
+    #required = ["R1", "R2"]
+    #optional = ["I1", "I2"]
+    #format = ["fastq", "fq"]
 
     #Capture per lane file checks
     lane_checks = []
@@ -149,11 +161,11 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
                 row.append(opt)
         #If # files anything else error
         else:
-            print("Mismatched # of files found")
+            logger.error("Mismatch found! Please check file names for aliquot: {aliquot} ")
             row.append(req)
             row.append(opt)
         lane_checks.append(row)
-    print(lane_checks)
+        #print(lane_checks)
         #check if both files are present and have the right extention
     return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Opt"}))
 
@@ -217,10 +229,10 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
 def check_tech_assoc_files(manifest, file_list, techniques):
     technique = pd.read_csv(techniques, sep=",")
     total_file_count = len(manifest.filename)
-    lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
-    print("total files---")
-    print(total_file_count)
-    print(file_list)
+    #lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
+    #print("total files---")
+    #print(total_file_count)
+    #print(file_list)
     data_type = file_list['data_type'].unique()
 
     #All techniques that have R1, R2, I1, and I2 are in the list below. Add to list if new technique fits.
