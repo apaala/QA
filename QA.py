@@ -83,6 +83,8 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     print("total files---")
     print(total_file_count)
     print(file_list)
+    data_type = file_list.data_type.unique()
+
     #Define file name substring to look for
     #Assuming all raw files are fastq
     # if unique(file_list.data_type) == "raw":
@@ -103,7 +105,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         print(aliquot)
         print("-----")
         man_files = manifest[manifest['filename'].str.contains(aliquot)]
-        if unique(file_list.data_type) == "raw":
+        if data_type == "raw":
             print("files are raw")
         print(man_files.filename)
         
