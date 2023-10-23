@@ -233,7 +233,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     for index, row in technique.iterrows():
         tname = row['name']
         aliquot = row['aliquot']
-        logger.info(f"Checking Files for {tname} and Aliquot {aliquot}")
+        logger.info("Checking Files for {tname} and Aliquot {aliquot}")
         
         #Get all manifest info for technique aliquot
         man_files = manifest[manifest['filename'].str.contains(aliquot)]
@@ -243,7 +243,11 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
             if check_raw_files['Req'].all():
-                print("TRUE")
+                logger.info("All Required Files for {tname} and Aliquot {aliquot} are present")
+            else:
+                logger.error("All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
+            if check_raw_files['Opt'].all():
+                logger.info("All Optional Files for {tname} and Aliquot {aliquot} are present")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
