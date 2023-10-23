@@ -155,7 +155,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
         lane_checks.append(row)
     print(lane_checks)
         #check if both files are present and have the right extention
-    return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Optional"}))
+    return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Opt"}))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
