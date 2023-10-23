@@ -64,7 +64,7 @@ def main():
     ##Should be a loop for multiple techniques and aliquots???
     #####
     file_list = get_technique_file_list(options.technique, master_techniques)
-    required_files = check_tech_assoc_files(manifest, file_list, options.technique)
+    file_checks = check_tech_assoc_files(manifest, file_list, options.technique)
     # Get the aliquot and use it to find file names. pass it manifest, file_list, techniques
     #get_technique_info
 
@@ -113,25 +113,51 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot_files):
     required = ["R1", "R2"]
     optional = ["I1", "I2"]
     format = ["fastq", "fq"]
-    # For every aliquot there should be at least R1 and R2
-    #req = '|'.join(r"\b{}\b".format(x) for x in required)
+
+    #Capture per lane file checks
+    lane_checks = []
+
+    #For every aliquot there should be at least R1 and R2 for each lane.
     for lane in lanes_substring:
         print(lane)
+        req = False
+        opt = False
         lane_files = manifest[manifest['filename'].str.contains(lane)]
+        row = []
+        row.append(lane)
         #If # files == 4, check for R1/2 and I1/2
         if len(lane_files) ==4:
             #check if required files are present
             required_files = check_R1_R2_fastq(lane_files, lane)
+            if len(required_files) == 2:
+                req = True
+                row.append(req)
             optional_files = check_I1_I2_fastq(lane_files, lane)
+            if len(optional_files) == 2:
+                opt = True
+                row.append(opt)
+            else:
+                opt = False
+                row.append(opt)
             print("~~~~")
             print(optional_files)
             print(required_files)
         #If # files == 4, check for R1/2 
         elif len(lane_files) ==2:
             required_files = check_R1_R2_fastq(lane_files, lane)
+            if len(required_files) == 2:
+                req = True
+                row.append(req)
+            else:
+                opt = False
+                row.append(opt)
         #If # files anything else error
         else:
             print("Mismatched # of files found")
+            row.append(req)
+            row.append(opt)
+        lane_checks = lane_checks.append(row)
+    print(lane_checks)
         #check if both files are present and have the right extention
     return("yes")
 
@@ -171,7 +197,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
     # For every aliquot there should be at least R1 and R2
     #req = '|'.join(r"\b{}\b".format(x) for x in required)
     for lane in lanes_substring:
-        print(lane)
+        logger.debug("In check_raw_5_file_format_techniques().")
         lane_files = manifest[manifest['filename'].str.contains(lane)]
         #If # files == 5, check for R1/2/3 and I1/2
         if len(lane_files) ==5:
@@ -200,23 +226,25 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     print(total_file_count)
     print(file_list)
     data_type = file_list['data_type'].unique()
-    #all techniques that are R1 R2 I1 and I2
+
+    #All techniques that have R1, R2, I1, and I2 are in the list below. Add to list if new technique fits.
     raw_4_file_format_techniques = [ "10X Genomics Multiome;RNAseq", "10X Genomics Immune profiling;VDJ",
      "10X Genomics Immune profilling;GEX", "10xv2", "10xv3", "10xmultiome_cell_hash;RNA"]
+    
+    #All techniques that have R1, R2, R3, I1, and I2 are in the list below. Add to list if new technique fits.
     raw_5_file_format_techniques =[ "10X Genomics Multiome;ATAC-seq", "10xmultiome_cell_hash;ATAC"]
     
     for index, row in technique.iterrows():
         tname = row['name']
-        print(tname)
         aliquot = row['aliquot']
-        print(aliquot)
-        print("-----")
+        logger.info(f"Checking Files for {tname} and Aliquot {aliquot}")
+        
+        #Get all manifest info for technique aliquot
         man_files = manifest[manifest['filename'].str.contains(aliquot)]
 
+        #Currently only supporting raw file types. 
+        #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
-            print(tname)
-            print("Files expected are")
-            #print(file_list.file_format)
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
