@@ -27,7 +27,7 @@ def main():
     parser.add_argument("-d", "--dir_path", dest="dir_path",help="Path to directory with files to be assessed", metavar="PATH")
     parser.add_argument("-m", "--manifest", dest="manifest_path",help="Full path to manifest file", metavar="FILE")
     parser.add_argument("-t", "--technique", dest="technique",help="Technique to check files for")
-    parser.add_argument("-s", "--skip", dest="skip",help="Flag to skip checksum tests. Only use for testing and checking technique assoc files", action='store_false')
+    parser.add_argument("-s", "--skip", dest="skip",help="Flag to skip checksum tests. Only use for testing and checking technique assoc files", action='store_true')
     options = parser.parse_args()
 
     #Read manifest file
@@ -57,9 +57,11 @@ def main():
     print("----")
 
     ###commented checksum checking to test technique
-    if options.skip:
-        print("Skipping checksum tests!!!*****")
+    if not options.skip:
+        print("Performing checksum tests!!!*****")
         check_md5sums = match_md5sums_to_manifest(md5sums_df)
+    else:
+        print("Skipping checksum tests!!!****")
     #print(check_md5sums)
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
