@@ -59,3 +59,5 @@ Ex.
 *****Use full paths.
 *****Not ready for production!
 
+
+Note: If you run into issues cloning, I have a version in my scratch under backup
