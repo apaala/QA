@@ -105,7 +105,7 @@ def check_I1_I2_fastq(lane_files, lane):
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     logger.info("In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
-    print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",ext_req_checked.filename)
+    print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
 
 def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
