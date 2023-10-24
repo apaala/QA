@@ -1,0 +1,41 @@
+﻿technique,data_type,file_format,Req_vs_Optional
+gwas,align,bed,require
+gwas,align,bim,require
+gwas,align,fam,require
+10X Genomics Multiome;RNAseq,raw,R1_fastq,require
+10X Genomics Multiome;RNAseq,raw,R2_fastq,require
+10X Genomics Multiome;RNAseq,raw,index1_fastq,optional
+10X Genomics Multiome;RNAseq,raw,index2_fastq,optional
+10X Genomics Multiome;ATAC-seq,raw,R1_fastq,require
+10X Genomics Multiome;ATAC-seq,raw,R2_fastq,require
+10X Genomics Multiome;ATAC-seq,raw,R3_fastq,optional
+10X Genomics Multiome;ATAC-seq,raw,index1_fastq,optional
+10X Genomics Multiome;ATAC-seq,raw,index2_fastq,optional
+10X Genomics Immune profiling;VDJ,raw,R1_fastq,require
+10X Genomics Immune profiling;VDJ,raw,R2_fastq,require
+10X Genomics Immune profiling;VDJ,raw,index1_fastq,optional
+10X Genomics Immune profiling;VDJ,raw,index2_fastq,optional
+10X Genomics Immune profilling;GEX,raw,R1_fastq,require
+10X Genomics Immune profilling;GEX,raw,R2_fastq,require
+10X Genomics Immune profilling;GEX,raw,index1_fastq,optional
+10X Genomics Immune profilling;GEX,raw,index2_fastq,optional
+10xv2,raw,R1_fastq,require
+10xv2,raw,R2_fastq,require
+10xv2,raw,index1_fastq,optional
+10xv2,raw,index2_fastq,optional
+10xv3,raw,R1_fastq,require
+10xv3,raw,R2_fastq,require
+10xv3,raw,index1_fastq,optional
+10xv3,raw,index2_fastq,optional
+10xmultiome_cell_hash;ATAC,raw,R1_fastq,require
+10xmultiome_cell_hash;ATAC,raw,R2_fastq,require
+10xmultiome_cell_hash;ATAC,raw,R3_fastq,optional
+10xmultiome_cell_hash;ATAC,raw,index1_fastq,optional
+10xmultiome_cell_hash;ATAC,raw,index2_fastq,optional
+10xmultiome_cell_hash;RNA,raw,R1_fastq,require
+10xmultiome_cell_hash;RNA,raw,R2_fastq,require
+10xmultiome_cell_hash;RNA,raw,index1_fastq,optional
+10xmultiome_cell_hash;RNA,raw,index2_fastq,optional
+10xmultiome_cell_hash;hashing,raw,R1_fastq,require
+10xmultiome_cell_hash;hashing,raw,R2_fastq,require
+10xmultiome_cell_hash;hashing,raw,nuc_hash,require
