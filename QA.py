@@ -41,9 +41,9 @@ def main():
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
     
     #Tests
-    print(len(matched_files))
+    print("The number of matched files found: ",len(matched_files))
     print("-----")
-    print(len(unmatched_files))
+    print("The number of mismatched files found: ",len(unmatched_files))
 
     #generate md5sums
     
@@ -55,7 +55,7 @@ def main():
     #print(md5sums_df)
     print("----")
 
-    ###commented checksun checking to test technique
+    ###commented checksum checking to test technique
     check_md5sums = match_md5sums_to_manifest(md5sums_df)
     #print(check_md5sums)
     #check md5checksums
@@ -85,6 +85,8 @@ def check_R1_R2_fastq(lane_files, lane):
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
+    #temporary prints for new users. Will be replaced with logging.
+    print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: %s ",ext_req_checked ")
     return(ext_req_checked)
 
 def check_I1_I2_fastq(lane_files, lane):
@@ -102,6 +104,8 @@ def check_I1_I2_fastq(lane_files, lane):
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     logger.info("In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
+    #temporary prints for new users. Will be replaced with logging.
+    print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: %s ",ext_req_checked ")
     return(ext_req_checked)
 
 def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
@@ -160,6 +164,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
         lane_checks.append(row)
         #print(lane_checks)
         #check if both files are present and have the right extention
+    print("Performed checks for aliquot: ", aliquot)
     return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Opt"}))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
@@ -263,13 +268,16 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             print("files are not raw or in 4 format raw")
             #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
         #print(man_files.filename)
-        
+        #temporary prints for new users. Will be replaced with logging.
+        print(" Step 4: Performing checks for ", tname, " and aliquot ", aliquot)
     return total_file_count
 
 def get_technique_file_list(techniques, master):
     technique = pd.read_csv(techniques, sep=",")
     print(technique)
     file_list = master[master.technique.isin(technique.name)]
+    #temporary prints for new users. Will be replaced with logging.
+    print(" Step 3 Complete: Getting technique details")
     return(file_list)
 
 def open_techniques_with_pathlib(file_name):
@@ -279,12 +287,17 @@ def open_techniques_with_pathlib(file_name):
    return content
 
 def check_dir_vs_manifest(all_files, manifest):
+    """ 
+    Check if files in directory and files listed in the manifest match.
+    Error: if there are files in manifest missing from the directory.
+    Warning: if there are files in directory not in manifest
+    Inputs: Directory Files and Manifest Files.
+    Outputs: All files in both and missing files.
+    """
     #contains_all = manifest['filename'].isin(all_files).all()
     #if contains_all == False:
     #Get all files that are present in directory and in manifest
     contains_all = [x for x in all_files if x not in manifest.filename]
-    #missing_files = [x for x in manifest.filename if x not in all_files]
-    #contains_all = manifest[manifest.filename.isin(all_files)]
     #Get all files that are present in directory and missing in manifest. NBD. Add to log!
     missing_files_from_manifest = list(set(all_files) - set(manifest.filename))
     if len(missing_files_from_manifest)>0:
@@ -293,12 +306,17 @@ def check_dir_vs_manifest(all_files, manifest):
     missing_files = list(set(manifest.filename) - set(all_files))
     if len(missing_files)>0:
         logger.error("These files are in manifest but missing from the directory: %s ",missing_files)
+    #temporary message for debugging
+    print("Step 1 Complete: Checked Names")
     return(contains_all, missing_files)
 
 def match_md5sums_to_manifest(md5sums_df):
+    """ 
+    Generate independent md5sums and check them against those in manifest.
+    """
     #calc md5sum for each file and match to corresponding column in manifest.
-    logger.debug("In confirm_checksums_match().")
-    print( "in checking")
+    logger.debug("In match_md5sums_to_manifest().")
+    print( "in match_md5sums_to_manifest()")
     ####
     checksums_ok = False
     error_message = "does not match value provided in the manifest"
@@ -318,17 +336,19 @@ def match_md5sums_to_manifest(md5sums_df):
         # in manifest.
 
         # Create human readable error messages.
-        logger.debug("In confirm_checksums_match().")
+        logger.error("Found mismatches match_md5sums_to_manifest().")
 
         #send_file_validation_email(errors, submission_id, submitter)
     else:
         checksums_ok = True
-
+    #temporary prints for new users. Will be replaced with logging.
+    print("Step 2 Complete: Checking md5sums")
+    #print("checksums match!")
     return checksums_ok
 
 def compute_md5(filepath):
     """
-    Compute md5 checksum for file.
+    Compute md5 checksum for file. Borrowed from AUX.
     """
     logger.info(f"Computing md5 of {filepath}")
 
@@ -348,52 +368,52 @@ def compute_md5(filepath):
 
     return md5
 
-def confirm_checksums_match(worksheet_name, checksum_column_name, file_dataframe):
-    """
-    Confirms that MD5 checksums of the submitted files match the checksums
-    listed in the manifest. Mismatching checksums are reported to the
-    submitter.
+# def confirm_checksums_match(worksheet_name, checksum_column_name, file_dataframe):
+#     """
+#     Confirms that MD5 checksums of the submitted files match the checksums
+#     listed in the manifest. Mismatching checksums are reported to the
+#     submitter.
 
-    Returns True if all checksums match; otherwise returns False.
-    """
-    logger.debug("In confirm_checksums_match().")
+#     Returns True if all checksums match; otherwise returns False.
+#     """
+#     logger.debug("In confirm_checksums_match().")
 
-    checksums_ok = False
-    error_message = "does not match value provided in the manifest"
+#     checksums_ok = False
+#     error_message = "does not match value provided in the manifest"
 
-    # Compute checksum on each submitted file.
-    file_dataframe['observed_checksums'] = file_dataframe['submitted_filepath'].apply(compute_md5)
+#     # Compute checksum on each submitted file.
+#     file_dataframe['observed_checksums'] = file_dataframe['submitted_filepath'].apply(compute_md5)
     
-    # Create mask to find mismatching observed and expected checksums.
-    df_mask = (file_dataframe[checksum_column_name] != file_dataframe['observed_checksums'])
+#     # Create mask to find mismatching observed and expected checksums.
+#     df_mask = (file_dataframe[checksum_column_name] != file_dataframe['observed_checksums'])
     
-    # Get a list of row indices where observed checksums do not match the 
-    # checksum listed in the manifest.
-    rows_mismatched = file_dataframe[df_mask].index.tolist()
+#     # Get a list of row indices where observed checksums do not match the 
+#     # checksum listed in the manifest.
+#     rows_mismatched = file_dataframe[df_mask].index.tolist()
 
-    if len(rows_mismatched) > 0:
-        # One or more submitted file's checksum does not match checksum listed
-        # in manifest.
+#     if len(rows_mismatched) > 0:
+#         # One or more submitted file's checksum does not match checksum listed
+#         # in manifest.
 
-        # Create human readable error messages.
-        errors = format_errors_for_excel_manifest(
-            rows_mismatched,
-            worksheet_name,
-            checksum_column_name,
-            error_message
-        )
+#         # Create human readable error messages.
+#         errors = format_errors_for_excel_manifest(
+#             rows_mismatched,
+#             worksheet_name,
+#             checksum_column_name,
+#             error_message
+#         )
 
-        update_submission_db(
-            "error",
-            ", ".join(errors),
-            submission_id
-        )
+#         update_submission_db(
+#             "error",
+#             ", ".join(errors),
+#             submission_id
+#         )
 
-        #send_file_validation_email(errors, submission_id, submitter)
-    else:
-        checksums_ok = True
+#         #send_file_validation_email(errors, submission_id, submitter)
+#     else:
+#         checksums_ok = True
 
-    return checksums_ok
+#     return checksums_ok
 
 
 if __name__ == '__main__':
