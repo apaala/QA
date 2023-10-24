@@ -86,7 +86,7 @@ def check_R1_R2_fastq(lane_files, lane):
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
-    print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: %s ",ext_req_checked ")
+    print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",ext_req_checked)
     return(ext_req_checked)
 
 def check_I1_I2_fastq(lane_files, lane):
@@ -105,7 +105,7 @@ def check_I1_I2_fastq(lane_files, lane):
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     logger.info("In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
-    print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: %s ",ext_req_checked ")
+    print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: %s ",ext_req_checked)
     return(ext_req_checked)
 
 def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
@@ -128,7 +128,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
 
     #For every aliquot there should be at least R1 and R2 for each lane.
     for lane in lanes_substring:
-        print(lane)
+        #print(lane)
         req = False
         opt = False
         lane_files = manifest[manifest['filename'].str.contains(lane)]
@@ -194,34 +194,59 @@ def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
     return("yes")
 
 def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
+    """ This function checks for techniques that produce 5 files. 
+    These Files are expected to have specific substrings.
+    Input: 1) List of expected files, 
+           2) Manifest for aliquot 
+           3) aliquot string (not using currently may want to later.)
+    Output: DF with lane and T/F for required and optional files.
+    """
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print(" in sub for 4 files")
     required = ["R1", "R2"]
+    #another optional file is R3 not handled by above check. Accounted for below.
     optional = ["I1", "I2"]
+    
     format = ["fastq", "fq"]
+
+    #Capture per lane file checks
+    lane_checks = []
+
     # For every aliquot there should be at least R1 and R2
-    #req = '|'.join(r"\b{}\b".format(x) for x in required)
     for lane in lanes_substring:
+        req = False
+        opt = False
         logger.debug("In check_raw_5_file_format_techniques().")
         lane_files = manifest[manifest['filename'].str.contains(lane)]
+        row = []
+        row.append(lane)
         #If # files == 5, check for R1/2/3 and I1/2
         if len(lane_files) ==5:
             #check if required files are present
             required_files = check_R1_R2_fastq(lane_files, lane)
+            if len(required_files) == 2:
+                req = True
+                row.append(req)
             optional_files = check_I1_I2_fastq(lane_files, lane)
             optional_R3 = lane_files[lane_files['filename'].str.contains("R3")]
-        #If # files == 4, check for R1/2 
-        elif len(lane_files) == 4:
-            required_files = check_R1_R2_fastq(lane_files, lane)
-            optional_files = check_I1_I2_fastq(lane_files, lane)
+            if len(optional_files) == 2 and optional_R3:
+                opt = True
+                row.append(opt)
         elif len(lane_files) ==2:
             required_files = check_R1_R2_fastq(lane_files, lane)
+            if len(required_files) == 2:
+                req = True
+                row.append(req)
         #If # files anything else error
         else:
             print("Mismatched # of files found")
+            row.append(req)
+            row.append(opt)
+        lane_checks.append(row)
         #check if both files are present and have the right extention
-    return("yes")
+    print("Performed checks for aliquot: ", aliquot)
+    return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Opt"}))
 
 
 def check_tech_assoc_files(manifest, file_list, techniques):
