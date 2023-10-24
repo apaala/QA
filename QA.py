@@ -299,7 +299,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
 
 def get_technique_file_list(techniques, master):
     technique = pd.read_csv(techniques, sep=",")
-    print(technique)
+    #print(technique)
     file_list = master[master.technique.isin(technique.name)]
     #temporary prints for new users. Will be replaced with logging.
     print(" Step 3 Complete: Getting technique details")
