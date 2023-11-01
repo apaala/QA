@@ -18,6 +18,13 @@ import pandas as pd
 import logging
 import hashlib
 from pathlib import Path
+
+logging.basicConfig(filename="log.txt",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
 logger = logging.getLogger('app.' + __name__)
 
 
@@ -371,8 +378,9 @@ def match_md5sums_to_manifest(md5sums_df):
         #send_file_validation_email(errors, submission_id, submitter)
     else:
         checksums_ok = True
+        print("Step 2 Complete: Checking md5sums")
     #temporary prints for new users. Will be replaced with logging.
-    print("Step 2 Complete: Checking md5sums")
+    #print("Step 2 Complete: Checking md5sums")
     #print("checksums match!")
     return checksums_ok
 
