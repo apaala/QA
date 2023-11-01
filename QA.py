@@ -97,7 +97,7 @@ def check_R1_R2_fastq(lane_files, lane):
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     #Check if only one character is different
-    matches = match(ext_req_checked[0],ext_req_checked[1])
+    matches = match(required_files[0],required_files[1])
     print(matches)
     logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
