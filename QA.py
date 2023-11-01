@@ -96,6 +96,9 @@ def check_R1_R2_fastq(lane_files, lane):
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
+    #Check if only one character is different
+    matches = match(ext_req_checked[0],ext_req_checked[1])
+    print(matches)
     logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
     print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
@@ -406,6 +409,23 @@ def compute_md5(filepath):
 
     return md5
 
+
+def match(s1, s2):
+    """
+    Check 2 strings and allow for only 1 mismatch.
+    ex. NY-MX12001-1_S1_L007_I1_001.fastq.gz and NY-MX12001-1_S1_L007_I2_001.fastq.gz should be a match
+    So if match == T and I2 in string it should pass.
+    ex. NY-MX12001-1_S1_L007_I1_001.fastq.gz and NY-MX12001-1_S542_L007_I2_001.fastq.gz should not be a match
+    
+    """
+    ok = False
+    for c1, c2 in zip(s1, s2):
+        if c1 != c2:
+            if ok:
+                return False
+            else:
+                ok = True
+    return ok
 # def confirm_checksums_match(worksheet_name, checksum_column_name, file_dataframe):
 #     """
 #     Confirms that MD5 checksums of the submitted files match the checksums
