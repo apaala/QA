@@ -149,7 +149,8 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
 
     #Lanes per aliquot
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
-    logger.debug("In check_raw_4_file_format_techniques().")
+    logger.debug("In check_raw_4_file_format_techniques()")
+    logger.info("Starting checks for raw 4 file format techniques.")
 
     #Capture per lane file checks
     lane_checks = []
@@ -186,13 +187,13 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
                 row.append(opt)
         #If # files anything else error
         else:
-            logger.error("Mismatch found! Please check file names for aliquot: {aliquot} ")
+            logger.error("Mismatch found! Please check file names for aliquot: ",aliquot)
             row.append(req)
             row.append(opt)
         lane_checks.append(row)
         #print(lane_checks)
         #check if both files are present and have the right extention
-    print("Performed checks for aliquot: ", aliquot)
+    #print("Performed checks for aliquot: ", aliquot)
     return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Opt"}))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
@@ -308,11 +309,11 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             if check_raw_files['Req'].all():
                 logger.info("All Required Files for ",tname," and Aliquot ",aliquot," are present")
             else:
-                logger.error("All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
+                logger.error("All Required Files for ",tname," and Aliquot ",aliquot," are NOT present!")
             if check_raw_files['Opt'].all():
-                logger.info("All Optional Files for {tname} and Aliquot {aliquot} are present")
+                logger.info("All Optional Files for ",tname," and Aliquot ",aliquot," are present")
             else:
-                logger.warning("All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
+                logger.warning("All Optional Files for ",tname," and Aliquot ",aliquot," are NOT present!")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
