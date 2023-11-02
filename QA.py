@@ -52,10 +52,13 @@ def main():
     matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
     
     #Tests
-    print("The number of matched files found: ",len(matched_files))
-    print("-----")
-    print("The number of mismatched files found: ",len(unmatched_files))
+    #print("The number of matched files found: ",len(matched_files))
+    #print("-----")
+    #print("The number of mismatched files found: ",len(unmatched_files))
 
+    #Logging matches and mismatches
+    logger.info("The number of matched files found: ",len(matched_files))
+    logger.info("The number of mismatched files found: ",len(unmatched_files))
     #generate md5sums
     
     #add logic to not get here if file names dont match
@@ -68,10 +71,12 @@ def main():
 
     ###commented checksum checking to test technique
     if not options.skip:
-        print("Performing checksum tests!!!*****")
+        logger.info("Validating checksums now--")
+        #print("Performing checksum tests!!!*****")
         check_md5sums = match_md5sums_to_manifest(md5sums_df)
     else:
-        print("Skipping checksum tests!!!****")
+        #print("Skipping checksum tests!!!****")
+        logger.info("Validating checksum step skipped!")
     #print(check_md5sums)
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
@@ -301,7 +306,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
             if check_raw_files['Req'].all():
-                logger.info("All Required Files for {tname} and Aliquot {aliquot} are present")
+                logger.info("All Required Files for ",tname," and Aliquot ",aliquot," are present")
             else:
                 logger.error("All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
             if check_raw_files['Opt'].all():
@@ -325,7 +330,8 @@ def get_technique_file_list(techniques, master):
     #print(technique)
     file_list = master[master.technique.isin(technique.name)]
     #temporary prints for new users. Will be replaced with logging.
-    print(" Step 3 Complete: Getting technique details")
+    #print(" Step 3 Complete: Getting technique details")
+    logger.info("Getting technique details from master file based on user input.")
     return(file_list)
 
 def open_techniques_with_pathlib(file_name):
@@ -355,7 +361,7 @@ def check_dir_vs_manifest(all_files, manifest):
     if len(missing_files)>0:
         logger.error("These files are in manifest but missing from the directory: %s ",missing_files)
     #temporary message for debugging
-    print("Step 1 Complete: Checked Names")
+    #print("Step 1 Complete: Checked Names")
     return(contains_all, missing_files)
 
 def match_md5sums_to_manifest(md5sums_df):
