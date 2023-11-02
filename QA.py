@@ -57,8 +57,8 @@ def main():
     #print("The number of mismatched files found: ",len(unmatched_files))
 
     #Logging matches and mismatches
-    logger.info("The number of matched files found: {len(matched_files)}")
-    logger.info("The number of mismatched files found: {len(unmatched_files)}")
+    logger.info(f"The number of matched files found: {len(matched_files)}")
+    logger.info(f"The number of mismatched files found: {len(unmatched_files)}")
     #generate md5sums
     
     #add logic to not get here if file names dont match
