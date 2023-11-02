@@ -106,7 +106,7 @@ def check_R1_R2_fastq(lane_files, lane):
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     #Check if only one character is different. should it be ext_req_checked???
     matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
-    print(matches)
+    #print(matches)
     #add logic for checking if matched, else error
     if matches:
         logger.info(f"In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
@@ -131,7 +131,15 @@ def check_I1_I2_fastq(lane_files, lane):
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
-    logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+    #Check if only one character is different. should it be ext_req_checked???
+    matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
+    #print(matches)
+    #add logic for checking if matched, else error
+    if matches:
+        logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+    else:
+        logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
+    #logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
     #temporary prints for new users. Will be replaced with logging.
     #print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
