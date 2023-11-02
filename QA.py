@@ -325,6 +325,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
                 print("QA passed for ",tname," aliquot ", aliquot)
             else:
                 logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
+                print("QA FAILED for ",tname," aliquot ", aliquot)
             if check_raw_files['Opt'].all():
                 logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
             else:
