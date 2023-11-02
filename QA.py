@@ -305,7 +305,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
     for index, row in technique.iterrows():
         tname = row['name']
         aliquot = row['aliquot']
-        logger.info("Checking Files for {tname} and Aliquot {aliquot}")
+        logger.info(f"Checking Files for {tname} and Aliquot {aliquot}")
         
         #Get all manifest info for technique aliquot
         man_files = manifest[manifest['filename'].str.contains(aliquot)]
