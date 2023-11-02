@@ -193,6 +193,9 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
                 row.append(req)
             else:
                 row.append(opt)
+        #account for missing lanes, they dont always submit all lanes.
+        elif len(lane_files) == 0:
+            logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
         #If # files anything else error
         else:
             logger.error(f"Mismatch found! Please check file names for aliquot: {aliquot}")
