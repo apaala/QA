@@ -187,7 +187,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
                 row.append(opt)
         #If # files anything else error
         else:
-            logger.error(f"Mismatch found! Please check file names for aliquot: {aliquot})
+            logger.error(f"Mismatch found! Please check file names for aliquot: {aliquot}")
             row.append(req)
             row.append(opt)
         lane_checks.append(row)
