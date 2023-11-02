@@ -19,7 +19,10 @@ import logging
 import hashlib
 from pathlib import Path
 
-logging.basicConfig(filename="log.txt",
+parent_path = Path(__file__).resolve().parent
+log_path = parent_path / "log.txt"
+
+logging.basicConfig(filename=log_path,
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
