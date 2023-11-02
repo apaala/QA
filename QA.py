@@ -109,9 +109,9 @@ def check_R1_R2_fastq(lane_files, lane):
     print(matches)
     #add logic for checking if matched, else error
     if matches:
-        logger.info(f"In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s",join(ext_req_checked.filename))
+        logger.info(f"In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s",",".join(ext_req_checked.filename))
     else:
-        logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} failed: %s",join(ext_req_checked.filename))
+        logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} failed: %s",",".join(ext_req_checked.filename))
     #logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
     print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
