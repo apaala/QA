@@ -23,7 +23,7 @@ parent_path = Path(__file__).resolve().parent
 log_path = parent_path / "log.txt"
 
 logging.basicConfig(filename=log_path,
-                    filemode='a',
+                    filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
@@ -158,7 +158,6 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
     #Lanes per aliquot
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     logger.debug("In check_raw_4_file_format_techniques()")
-    logger.info("")
 
     #Capture per lane file checks
     lane_checks = []
@@ -227,6 +226,8 @@ def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
         #If # files == 4, check for R1/2 
         elif len(lane_files) ==2:
             required_files = check_R1_R2_fastq(lane_files, lane)
+        elif len(lane_files) == 0:
+            logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
         #If # files anything else error
         else:
             print("Mismatched # of files found")
@@ -241,7 +242,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
            3) aliquot string (not using currently may want to later.)
     Output: DF with lane and T/F for required and optional files.
     """
-    #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
+    #ASSUMPTION! Every aliquot has lanes that will be named in the format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print(" in sub for 4 files")
     required = ["R1", "R2"]
@@ -278,6 +279,8 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
             if len(required_files) == 2:
                 req = True
                 row.append(req)
+        elif len(lane_files) == 0:
+            logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
         #If # files anything else error
         else:
             print("Mismatched # of files found")
@@ -319,6 +322,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
+                print("QA passed for ",tname," aliquot ", aliquot)
             else:
                 logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
             if check_raw_files['Opt'].all():
