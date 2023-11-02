@@ -109,9 +109,9 @@ def check_R1_R2_fastq(lane_files, lane):
     print(matches)
     #add logic for checking if matched, else error
     if matches:
-        logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked.filename)
+        logger.info(f"In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked.filename)
     else:
-        logger.error("In check_R1_R2_fastq(). Following files for lane: {lane} failed: %s ",ext_req_checked.filename)
+        logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} failed: %s ",ext_req_checked.filename)
     #logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
     print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
@@ -131,7 +131,7 @@ def check_I1_I2_fastq(lane_files, lane):
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
-    logger.info("In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
+    logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
     print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
@@ -150,7 +150,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
     #Lanes per aliquot
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     logger.debug("In check_raw_4_file_format_techniques()")
-    logger.info("Starting checks for raw 4 file format techniques.")
+    logger.info("")
 
     #Capture per lane file checks
     lane_checks = []
@@ -187,7 +187,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
                 row.append(opt)
         #If # files anything else error
         else:
-            logger.error("Mismatch found! Please check file names for aliquot: ",aliquot)
+            logger.error(f"Mismatch found! Please check file names for aliquot: {aliquot})
             row.append(req)
             row.append(opt)
         lane_checks.append(row)
@@ -307,13 +307,13 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
             if check_raw_files['Req'].all():
-                logger.info("All Required Files for ",tname," and Aliquot ",aliquot," are present")
+                logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
             else:
-                logger.error("All Required Files for ",tname," and Aliquot ",aliquot," are NOT present!")
+                logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
             if check_raw_files['Opt'].all():
-                logger.info("All Optional Files for ",tname," and Aliquot ",aliquot," are present")
+                logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
             else:
-                logger.warning("All Optional Files for ",tname," and Aliquot ",aliquot," are NOT present!")
+                logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
