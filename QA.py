@@ -96,7 +96,7 @@ def check_R1_R2_fastq(lane_files, lane):
     required_files = pd.DataFrame()
     
     #Lists with corresponding substrings
-    required = ["R1", "R2"]
+    required = ["_R1", "_R2"]
 
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
@@ -119,11 +119,11 @@ def check_R1_R2_fastq(lane_files, lane):
 
 def check_I1_I2_fastq(lane_files, lane):
     #check for I1 and I2 fastq files for raw techniques
-    #check if required files are present
+    #check if optional files are present.If yes both have to present!
     required_files = pd.DataFrame()
     
     #List with corresponding substrings
-    required = ["I1", "I2"]
+    required = ["_I1", "_I2"]
 
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
@@ -143,6 +143,68 @@ def check_I1_I2_fastq(lane_files, lane):
     #temporary prints for new users. Will be replaced with logging.
     #print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
+
+def check_R1_R2_R3_fastq(lane_files, lane):
+    #check for R1, R2 and R3 fastq files for raw 5 file techniques
+    #check if required files are present
+    required_files = pd.DataFrame()
+    
+    #Lists with corresponding substrings
+    required = ["_R1", "_R2", "_R3"]
+
+    for r in required:
+        #Will need a more robust solution later as people name things inconsistently
+        checkr = lane_files[lane_files['filename'].str.contains(r)]
+        required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
+        ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
+        if len(required_files) == 3 and len(ext_req_checked) !=3:
+            ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
+    #Check if only one character is different. Adding second match for R3 files.
+    matches1 = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
+    matches2 = match(ext_req_checked.filename[0],ext_req_checked.filename[2])
+    #print(matches)
+    #add logic for checking if matched, else error
+    if matches1 and matches2:
+        logger.info(f"In check_R1_R2_R3_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+    else:
+        logger.error(f"In check_R1_R2_R3_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
+    #logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
+    #temporary prints for new users. Will be replaced with logging.
+    #print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
+    return(ext_req_checked)
+
+
+def check_I1_or_I2_fastq(lane_files, lane):
+    #check for I1 and I2 fastq files for raw techniques
+    #check if optional files are present.If yes both have to present!
+    required_files = pd.DataFrame()
+    
+    #List with corresponding substrings
+    required = ["_I1", "_I2"]
+
+    for r in required:
+        checkr = lane_files[lane_files['filename'].str.contains(r)]
+        required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
+        ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
+        if len(ext_req_checked) ==0:
+            ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
+    #Check if only one character is different. should it be ext_req_checked???
+    #If only one file
+    if len(ext_req_checked) == 1:
+        logger.info(f"In check_I1_or_I2_fastq(). Following lane: {lane} only has one Optional file: %s ",",".join(ext_req_checked.filename))
+    elif len(ext_req_checked) == 2:
+        matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
+        #print(matches)
+        #add logic for checking if matched, else error
+        if matches:
+            logger.info(f"In check_I1_or_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+        else:
+            logger.error(f"In check_I1_or_I2_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
+    #logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+    #temporary prints for new users. Will be replaced with logging.
+    #print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
+    return(ext_req_checked)
+
 
 def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
     """ This function checks for techniques that produce 4 files. 
@@ -263,19 +325,19 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
         row = []
         row.append(lane)
         #If # files == 5, check for R1/2/3 and I1/2
-        if len(lane_files) ==5:
+        if len(lane_files) == 4 or len(lane_files) == 5:
             #check if required files are present
             required_files = check_R1_R2_fastq(lane_files, lane)
             if len(required_files) == 2:
                 req = True
                 row.append(req)
-            optional_files = check_I1_I2_fastq(lane_files, lane)
+            optional_files = check_I1_or_I2_fastq(lane_files, lane)
             optional_R3 = lane_files[lane_files['filename'].str.contains("R3")]
             if len(optional_files) == 2 and optional_R3:
                 opt = True
                 row.append(opt)
-        elif len(lane_files) ==2:
-            required_files = check_R1_R2_fastq(lane_files, lane)
+        elif len(lane_files) ==3:
+            required_files = check_R1_R2_R3_fastq(lane_files, lane)
             if len(required_files) == 2:
                 req = True
                 row.append(req)
@@ -283,7 +345,8 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
             logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
         #If # files anything else error
         else:
-            print("Mismatched # of files found")
+            #print("Mismatched # of files found")
+            logger.error(f"Mismatch found! Please check file names for aliquot: {aliquot}")
             row.append(req)
             row.append(opt)
         lane_checks.append(row)
@@ -331,9 +394,31 @@ def check_tech_assoc_files(manifest, file_list, techniques):
             else:
                 logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
+            #needs testing
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
+            if check_raw_files['Req'].all():
+                logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
+                print("QA passed for ",tname," aliquot ", aliquot)
+            else:
+                logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
+                print("QA FAILED for ",tname," aliquot ", aliquot)
+            if check_raw_files['Opt'].all():
+                logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
+            else:
+                logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
+            #needs testing
             check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot)
+            if check_raw_files['Req'].all():
+                logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
+                print("QA passed for ",tname," aliquot ", aliquot)
+            else:
+                logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
+                print("QA FAILED for ",tname," aliquot ", aliquot)
+            if check_raw_files['Opt'].all():
+                logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
+            else:
+                logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         else:
             print("files are not raw or in 4 format raw")
             #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
