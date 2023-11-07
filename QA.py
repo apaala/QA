@@ -30,7 +30,7 @@ from pathlib import Path
 
 #logger = logging.getLogger('app.' + __name__)
 
-
+logger = logging.getLogger('app.' + __name__)
 
 def main():
     parser = argparse.ArgumentParser( description='User inputs to QA script')
@@ -54,7 +54,7 @@ def main():
                     datefmt="%Y-%m-%dT%H:%M:%S%z",
                     level=logging.DEBUG)
 
-    logger = logging.getLogger('app.' + __name__)
+    
 
     #Read manifest file
     manifest = pd.read_csv(options.manifest_path, sep="\t")
