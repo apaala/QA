@@ -45,7 +45,7 @@ def main():
     #Logging details
     parent_path = Path(__file__).resolve().parent
     if options.log_dir:
-        log_path = options.log_dir / "log.txt"
+        log_path = options.log_dir
     else:
         log_path = parent_path / "log.txt"
     logging.basicConfig(filename=log_path,
