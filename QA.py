@@ -246,7 +246,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
                 req_in_dir = False
             else:
                 req_in_dir = True
-            if len(required_files) == 2 and req_in_dir = False:
+            if len(required_files) == 2 and req_in_dir == False:
                 req = True
                 row.append(req)
             optional_files = check_I1_I2_fastq(lane_files, lane)
@@ -254,7 +254,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
                 opt_in_dir = False
             else:
                 opt_in_dir = True
-            if len(optional_files) == 2 and opt_in_dir = False:
+            if len(optional_files) == 2 and opt_in_dir == False:
                 opt = True
                 row.append(opt)
             else:
