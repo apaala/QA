@@ -286,7 +286,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
                 row.append(opt)
         #If # files == 2, check for R1/2 
         elif len(lane_files) ==2:
-            required_files = check_R1_R2_fastq(lane_files, lane)
+            required_files = check_R1_R2_fastq(lane_files, lane, missing_files)
             if len(required_files) == 2:
                 req = True
                 row.append(req)
