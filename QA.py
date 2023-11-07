@@ -137,6 +137,9 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
     #List with corresponding substrings
     required = ["_I1", "_I2"]
 
+    #flag for capturing missing file
+    is_missing = True
+
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
         required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
@@ -146,9 +149,17 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
     #Check if only one character is different. should it be ext_req_checked???
     matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
     #print(matches)
+    #Check if names being checked have been reported as missing
+    if ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)].empty:
+        is_missing = False
+    else:
+        is_missing = True
     #add logic for checking if matched, else error
-    if matches:
+    if matches and is_missing == False:
         logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+    elif matches and is_missing == True:
+        missed_names = ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)]
+        logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} are missing: %s ",",".join(missed_names.filename))
     else:
         logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
     #logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
