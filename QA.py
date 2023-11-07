@@ -50,7 +50,7 @@ def main():
         log_path = parent_path / "log.txt"
     logging.basicConfig(filename=log_path,
                     filemode='w',
-                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    format='%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt="%Y-%m-%d %H:%M:%S%z",
                     level=logging.DEBUG)
 
