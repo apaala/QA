@@ -51,7 +51,7 @@ def main():
     logging.basicConfig(filename=log_path,
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt="%Y-%m-%dT%H:%M:%S%z",
+                    datefmt="%Y-%m-%d %H:%M:%S%z",
                     level=logging.DEBUG)
 
     
