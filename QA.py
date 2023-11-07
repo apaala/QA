@@ -37,6 +37,8 @@ def main():
     parser.add_argument("-d", "--dir_path", dest="dir_path",help="Path to directory with files to be assessed", metavar="PATH")
     parser.add_argument("-m", "--manifest", dest="manifest_path",help="Full path to manifest file", metavar="FILE")
     parser.add_argument("-t", "--technique", dest="technique",help="Technique to check files for")
+    #Add option to direct logfile to a specific directory.
+    #parser.add_argument("-o", "--log", dest="log_dir",help="Full path where you would like to direct the detailed log file.", metavar="PATH")
     parser.add_argument("-s", "--skip", dest="skip",help="Flag to skip checksum tests. Only use for testing and checking technique assoc files", action='store_true')
     options = parser.parse_args()
 
@@ -84,7 +86,7 @@ def main():
     ##Should be a loop for multiple techniques and aliquots???
     #####
     file_list = get_technique_file_list(options.technique, master_techniques)
-    file_checks = check_tech_assoc_files(manifest, file_list, options.technique)
+    file_checks = check_tech_assoc_files(manifest, file_list, options.technique, unmatched_files)
     # Get the aliquot and use it to find file names. pass it manifest, file_list, techniques
     #get_technique_info
 
@@ -206,7 +208,7 @@ def check_I1_or_I2_fastq(lane_files, lane):
     return(ext_req_checked)
 
 
-def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
+def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_files):
     """ This function checks for techniques that produce 4 files. 
     These Files are expected to have specific substrings.
     Input: 1) List of expected files, 
@@ -230,17 +232,29 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot):
         req = False
         opt = False
         lane_files = manifest[manifest['filename'].str.contains(lane)]
+        #Add check to see if the filenames being checked exist in the directory
         row = []
         row.append(lane)
+        #Flags to check for missing files
+        req_in_dir = True
+        opt_in_dir = True
         #If # files == 4, check for R1/2 and I1/2
         if len(lane_files) ==4:
             #check if required files are present
             required_files = check_R1_R2_fastq(lane_files, lane)
-            if len(required_files) == 2:
+            if required_files[required_files['filename'].isin(missing_files)]:
+                req_in_dir = False
+            else:
+                req_in_dir = True
+            if len(required_files) == 2 and req_in_dir = False:
                 req = True
                 row.append(req)
             optional_files = check_I1_I2_fastq(lane_files, lane)
-            if len(optional_files) == 2:
+            if optional_files[optional_files['filename'].isin(missing_files)]:
+                opt_in_dir = False
+            else:
+                opt_in_dir = True
+            if len(optional_files) == 2 and opt_in_dir = False:
                 opt = True
                 row.append(opt)
             else:
@@ -355,7 +369,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
     return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Opt"}))
 
 
-def check_tech_assoc_files(manifest, file_list, techniques):
+def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
     technique = pd.read_csv(techniques, sep=",")
     total_file_count = len(manifest.filename)
     #lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
@@ -382,7 +396,7 @@ def check_tech_assoc_files(manifest, file_list, techniques):
         #Currently only supporting raw file types. 
         #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
-            check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot)
+            check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
                 print("QA passed for ",tname," aliquot ", aliquot)
