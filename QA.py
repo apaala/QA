@@ -25,7 +25,7 @@ log_path = parent_path / "log.txt"
 logging.basicConfig(filename=log_path,
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt='%H:%M:%S',
+                    datefmt="%Y-%m-%dT%H:%M:%S%z",
                     level=logging.DEBUG)
 
 logger = logging.getLogger('app.' + __name__)
@@ -390,7 +390,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
         lane_checks.append(row)
         #check if both files are present and have the right extention
     print("Performed checks for aliquot: ", aliquot)
-    return(pd.DataFrame(lane_checks, columns = {"Lane", "Req", "Opt"}))
+    return(pd.DataFrame(lane_checks, columns = ["Lane", "Req", "Opt"]))
 
 
 def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
@@ -480,7 +480,7 @@ def get_technique_file_list(techniques, master):
     file_list = master[master.technique.isin(technique.name)]
     #temporary prints for new users. Will be replaced with logging.
     #print(" Step 3 Complete: Getting technique details")
-    logger.info("Getting technique details from master file based on user input.")
+    logger.info(f"Getting technique details from master file based on user input.")
     return(file_list)
 
 def open_techniques_with_pathlib(file_name):
@@ -504,11 +504,11 @@ def check_dir_vs_manifest(all_files, manifest):
     #Get all files that are present in directory and missing in manifest. NBD. Add to log!
     missing_files_from_manifest = list(set(all_files) - set(manifest.filename))
     if len(missing_files_from_manifest)>0:
-        logger.warning("These files are not in manifest but present in the directory: %s ",missing_files_from_manifest)
+        logger.warning(f"These files are not in manifest but present in the directory: %s ",missing_files_from_manifest)
     #Get all files that are present in manifest and missing in directory. Bad.
     missing_files = list(set(manifest.filename) - set(all_files))
     if len(missing_files)>0:
-        logger.error("These files are in manifest but missing from the directory: %s ",missing_files)
+        logger.error(f"These files are in manifest but missing from the directory: %s ",missing_files)
     #temporary message for debugging
     #print("Step 1 Complete: Checked Names")
     return(contains_all, missing_files)
@@ -539,7 +539,7 @@ def match_md5sums_to_manifest(md5sums_df):
         # in manifest.
 
         # Create human readable error messages.
-        logger.error("Found mismatches match_md5sums_to_manifest().")
+        logger.error(f"Found mismatches match_md5sums_to_manifest(). Details : %s",rows_mismatched)
 
         #send_file_validation_email(errors, submission_id, submitter)
     else:
