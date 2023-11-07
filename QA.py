@@ -424,7 +424,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             if check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == True:
                 logger.info(f"All Required AND Optional Files for {tname} and Aliquot {aliquot} are present")
                 print("QA passed for ",tname," aliquot ", aliquot)
-            elif check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == False:
+            elif check_raw_files['Req'].all() == True and check_raw_files['Opt'].any() == False:
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present. Optional files are either absent of failed QA.")
                 print("QA passed for Required files for ",tname," aliquot ", aliquot)
             else:
