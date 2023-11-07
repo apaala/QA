@@ -281,6 +281,9 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
             if len(optional_files) == 2 and opt_in_dir == False:
                 opt = True
                 row.append(opt)
+            elif len(optional_files) == 0:
+                opt = True
+                row.append(opt)
             else:
                 opt = False
                 row.append(opt)
