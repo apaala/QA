@@ -117,9 +117,9 @@ def check_R1_R2_fastq(lane_files, lane, missing_files):
     matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
     #print(matches)
     #add logic for checking if matched, else error
-    if matches and is_missing == True:
+    if matches and is_missing == False:
         logger.info(f"In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
-    elif matches and is_missing == False:
+    elif matches and is_missing == True:
         missed_names = ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)]
         logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} are missing: %s ",",".join(missed_names.filename))
     else:
