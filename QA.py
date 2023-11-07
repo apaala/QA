@@ -428,6 +428,9 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             elif check_raw_files['Req'].all() == True and check_raw_files['Opt'].any() == False:
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present. Optional files are either absent of failed QA.")
                 print("QA passed for Required files for ",tname," aliquot ", aliquot)
+            elif check_raw_files['Req'].all() == True and check_raw_files['Opt'].any() == None:
+                logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present. Optional files are either absent.")
+                print("QA passed for Required files for ",tname," aliquot ", aliquot)
             else:
                 missing_lanes = check_raw_files[check_raw_files.eq(False).any(1)]["Lane"]
                 logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present for following lanes %s ",",".join(map(str,missing_lanes)))
