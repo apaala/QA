@@ -421,6 +421,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
+            print(check_raw_files)
             if check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == True:
                 logger.info(f"All Required AND Optional Files for {tname} and Aliquot {aliquot} are present")
                 print("QA passed for ",tname," aliquot ", aliquot)
