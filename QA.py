@@ -44,8 +44,10 @@ def main():
 
     #Logging details
     parent_path = Path(__file__).resolve().parent
-    log_path = parent_path / "log.txt"
-
+    if options.log_dir:
+        log_path = options.log_dir / "log.txt"
+    else:
+        log_path = parent_path / "log.txt"
     logging.basicConfig(filename=log_path,
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
