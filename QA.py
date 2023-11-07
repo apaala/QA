@@ -161,7 +161,7 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
         missed_names = ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)]
         logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} are missing: %s ",",".join(missed_names.filename))
     else:
-        logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
+        logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} failed file name QC: %s ",",".join(ext_req_checked.filename))
     #logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
     #temporary prints for new users. Will be replaced with logging.
     #print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
@@ -269,6 +269,9 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
                 req_in_dir = True
             if len(required_files) == 2 and req_in_dir == False:
                 req = True
+                row.append(req)
+            else:
+                req = False
                 row.append(req)
             optional_files = check_I1_I2_fastq(lane_files, lane, missing_files)
             if optional_files.loc[optional_files['filename'].isin(missing_files)].empty:
@@ -418,16 +421,19 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
-            if check_raw_files['Req'].all():
-                logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
+            if check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == True:
+                logger.info(f"All Required AND Optional Files for {tname} and Aliquot {aliquot} are present")
+                print("QA passed for ",tname," aliquot ", aliquot)
+            elif check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == False:
+                logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present. Optional files are either absent of failed QA.")
                 print("QA passed for ",tname," aliquot ", aliquot)
             else:
                 logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
                 print("QA FAILED for ",tname," aliquot ", aliquot)
-            if check_raw_files['Opt'].all():
-                logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
-            else:
-                logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
+            #if check_raw_files['Opt'].all():
+            #    logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
+            #else:
+            #    logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             #needs testing
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
