@@ -92,13 +92,15 @@ def main():
 
     #Check required files are present
 
-def check_R1_R2_fastq(lane_files, lane):
+def check_R1_R2_fastq(lane_files, lane, missing_files):
     #check for R1 and R2 fastq files for raw techniques
     #check if required files are present
     required_files = pd.DataFrame()
     
     #Lists with corresponding substrings
     required = ["_R1", "_R2"]
+    #flag for capturing missing file
+    is_missing = True
 
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
@@ -106,12 +108,20 @@ def check_R1_R2_fastq(lane_files, lane):
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
+    #Check if names being checked have been reported as missing
+    if ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)].empty:
+        is_missing = False
+    else:
+        is_missing = True
     #Check if only one character is different. should it be ext_req_checked???
     matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
     #print(matches)
     #add logic for checking if matched, else error
-    if matches:
+    if matches and is_missing == True:
         logger.info(f"In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+    elif matches and is_missing == False:
+        missed_names = ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)]
+        logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} are missing: %s ",",".join(missed_names.filename))
     else:
         logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
     #logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
@@ -119,7 +129,7 @@ def check_R1_R2_fastq(lane_files, lane):
     #print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
 
-def check_I1_I2_fastq(lane_files, lane):
+def check_I1_I2_fastq(lane_files, lane, missing_files):
     #check for I1 and I2 fastq files for raw techniques
     #check if optional files are present.If yes both have to present!
     required_files = pd.DataFrame()
@@ -241,7 +251,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
         #If # files == 4, check for R1/2 and I1/2
         if len(lane_files) ==4:
             #check if required files are present
-            required_files = check_R1_R2_fastq(lane_files, lane)
+            required_files = check_R1_R2_fastq(lane_files, lane, missing_files)
             if required_files.loc[required_files['filename'].isin(missing_files)].empty:
                 req_in_dir = False
             else:
@@ -249,7 +259,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
             if len(required_files) == 2 and req_in_dir == False:
                 req = True
                 row.append(req)
-            optional_files = check_I1_I2_fastq(lane_files, lane)
+            optional_files = check_I1_I2_fastq(lane_files, lane, missing_files)
             if optional_files.loc[optional_files['filename'].isin(missing_files)].empty:
                 opt_in_dir = False
             else:
