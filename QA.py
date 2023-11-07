@@ -19,16 +19,16 @@ import logging
 import hashlib
 from pathlib import Path
 
-parent_path = Path(__file__).resolve().parent
-log_path = parent_path / "log.txt"
+#parent_path = Path(__file__).resolve().parent
+#log_path = parent_path / "log.txt"
 
-logging.basicConfig(filename=log_path,
-                    filemode='w',
-                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt="%Y-%m-%dT%H:%M:%S%z",
-                    level=logging.DEBUG)
+#logging.basicConfig(filename=log_path,
+##                    filemode='w',
+#                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+#                    datefmt="%Y-%m-%dT%H:%M:%S%z",
+#                    level=logging.DEBUG)
 
-logger = logging.getLogger('app.' + __name__)
+#logger = logging.getLogger('app.' + __name__)
 
 
 
@@ -38,9 +38,21 @@ def main():
     parser.add_argument("-m", "--manifest", dest="manifest_path",help="Full path to manifest file", metavar="FILE")
     parser.add_argument("-t", "--technique", dest="technique",help="Technique to check files for")
     #Add option to direct logfile to a specific directory.
-    #parser.add_argument("-o", "--log", dest="log_dir",help="Full path where you would like to direct the detailed log file.", metavar="PATH")
+    parser.add_argument("-l", "--log", dest="log_dir",help="Full path where you would like to direct the detailed log file.", metavar="PATH")
     parser.add_argument("-s", "--skip", dest="skip",help="Flag to skip checksum tests. Only use for testing and checking technique assoc files", action='store_true')
     options = parser.parse_args()
+
+    #Logging details
+    parent_path = Path(__file__).resolve().parent
+    log_path = parent_path / "log.txt"
+
+    logging.basicConfig(filename=log_path,
+                    filemode='w',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt="%Y-%m-%dT%H:%M:%S%z",
+                    level=logging.DEBUG)
+
+    logger = logging.getLogger('app.' + __name__)
 
     #Read manifest file
     manifest = pd.read_csv(options.manifest_path, sep="\t")
