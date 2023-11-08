@@ -309,6 +309,8 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
         #account for missing lanes, they dont always submit all lanes.
         elif len(lane_files) == 0:
             logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
+            row.append(req)
+            row.append(opt)
         #If # files anything else error
         else:
             logger.error(f"Mismatch found! Please check file names for aliquot: {aliquot}")
@@ -554,8 +556,8 @@ def match_md5sums_to_manifest(md5sums_df):
 
         # Create human readable error messages.
         logger.error(f"Found mismatches match_md5sums_to_manifest(). Filename : %s",",".join(md5sums_df.iloc[rows_mismatched,1]))
-        print("cheksum QC failed!",",".join(md5sums_df.iloc[rows_mismatched,1]))
-        print(df_mask)
+        print("cheksum QC failed for the following",",".join(md5sums_df.iloc[rows_mismatched,1]))
+        ###print(df_mask)
         #send_file_validation_email(errors, submission_id, submitter)
     else:
         checksums_ok = True
