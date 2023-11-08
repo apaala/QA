@@ -554,7 +554,7 @@ def match_md5sums_to_manifest(md5sums_df):
 
         # Create human readable error messages.
         logger.error(f"Found mismatches match_md5sums_to_manifest(). Filename : %s",",".join(df_mask['manifest_filename']))
-
+        print("cheksum QC failed!",",".join(df_mask['manifest_filename']))
         #send_file_validation_email(errors, submission_id, submitter)
     else:
         checksums_ok = True
