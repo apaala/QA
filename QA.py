@@ -553,8 +553,8 @@ def match_md5sums_to_manifest(md5sums_df):
         # in manifest.
 
         # Create human readable error messages.
-        logger.error(f"Found mismatches match_md5sums_to_manifest(). Filename : %s",",".join(df_mask))
-        print("cheksum QC failed!",",".join(df_mask))
+        logger.error(f"Found mismatches match_md5sums_to_manifest(). Filename : %s",",".join(md5sums_df.iloc[rows_mismatched,1]))
+        print("cheksum QC failed!",",".join(md5sums_df.iloc[rows_mismatched,1]))
         print(df_mask)
         #send_file_validation_email(errors, submission_id, submitter)
     else:
