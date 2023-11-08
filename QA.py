@@ -561,7 +561,7 @@ def match_md5sums_to_manifest(md5sums_df):
         #send_file_validation_email(errors, submission_id, submitter)
     else:
         checksums_ok = True
-        print("Step 2 Complete: Checking md5sums")
+        print("md5sum QA completed successfully.")
     #temporary prints for new users. Will be replaced with logging.
     #print("Step 2 Complete: Checking md5sums")
     #print("checksums match!")
