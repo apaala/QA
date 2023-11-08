@@ -187,7 +187,7 @@ def check_R1_R2_R3_fastq(lane_files, lane):
     required_files = pd.DataFrame()
     
     #Lists with corresponding substrings
-    required = ["_R1", "_R2", "_R3"]
+    required = ["_R1", "_R2", "_R3", "_I1"]
 
     for r in required:
         #Will need a more robust solution later as people name things inconsistently
@@ -359,9 +359,9 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
     #ASSUMPTION! Every aliquot has lanes that will be named in the format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print(" in sub for 4 files")
-    required = ["R1", "R2"]
+    #required = ["R1", "R2"]
     #another optional file is R3 not handled by above check. Accounted for below.
-    optional = ["I1", "I2"]
+    #optional = ["I1", "I2"]
     
     format = ["fastq", "fq"]
 
@@ -379,7 +379,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
         #If # files == 5, check for R1/2/3 and I1/2
         if len(lane_files) == 4 or len(lane_files) == 5:
             #check if required files are present
-            required_files = check_R1_R2_fastq(lane_files, lane)
+            required_files = check_R1_R2_R3_fastq(lane_files, lane)
             if len(required_files) == 2:
                 req = True
                 row.append(req)
@@ -553,8 +553,9 @@ def match_md5sums_to_manifest(md5sums_df):
         # in manifest.
 
         # Create human readable error messages.
-        logger.error(f"Found mismatches match_md5sums_to_manifest(). Filename : %s",",".join(df_mask['manifest_filename']))
-        print("cheksum QC failed!",",".join(df_mask['manifest_filename']))
+        logger.error(f"Found mismatches match_md5sums_to_manifest(). Filename : %s",",".join(df_mask))
+        print("cheksum QC failed!",",".join(df_mask))
+        print(df_mask)
         #send_file_validation_email(errors, submission_id, submitter)
     else:
         checksums_ok = True
