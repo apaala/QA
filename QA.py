@@ -535,7 +535,7 @@ def match_md5sums_to_manifest(md5sums_df):
     """
     #calc md5sum for each file and match to corresponding column in manifest.
     logger.debug("In match_md5sums_to_manifest().")
-    print( "in match_md5sums_to_manifest()")
+    #print( "in match_md5sums_to_manifest()")
     ####
     checksums_ok = False
     error_message = "does not match value provided in the manifest"
