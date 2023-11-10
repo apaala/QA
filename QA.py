@@ -408,7 +408,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
         lane_checks.append(row)
         #check if both files are present and have the right extention
     print("Performed checks for aliquot: ", aliquot)
-    return(pd.DataFrame(lane_checks, columns = ["Lane", "Req", "Opt"]))
+    return(pd.DataFrame(lane_checks, columns = ["Lane", "Req"]))
 
 
 def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
