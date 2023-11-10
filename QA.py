@@ -350,7 +350,7 @@ def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
         #check if both files are present and have the right extention
     return("yes")
 
-def check_raw_5_file_format_techniques(file_list, manifest, aliquot_files):
+def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_files):
     """ This function checks for techniques that produce 5 files. 
     These Files are expected to have specific substrings.
     Input: 1) List of expected files, 
@@ -458,7 +458,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             #    logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             #needs testing
-            check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot)
+            check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot, missing_files)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
                 print("QA passed for ",tname," aliquot ", aliquot)
@@ -471,7 +471,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
                 logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
             #needs testing
-            check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot)
+            check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot, missing_files)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
                 print("QA passed for ",tname," aliquot ", aliquot)
