@@ -467,10 +467,10 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             else:
                 logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
                 print("QA FAILED for ",tname," aliquot ", aliquot)
-            if check_raw_files['Opt'].all():
-                logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
-            else:
-                logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
+            #if check_raw_files['Opt'].all():
+            #    logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
+            #else:
+            #    logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
             #needs testing
             check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot, missing_files)
