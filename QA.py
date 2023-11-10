@@ -382,14 +382,14 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
         if len(lane_files) == 4 or len(lane_files) == 5:
             #check if required files are present
             required_files = check_R1_R2_R3_fastq(lane_files, lane)
-            if len(required_files) == 2:
+            if len(required_files) == 4:
                 req = True
                 row.append(req)
-            optional_files = check_I1_or_I2_fastq(lane_files, lane)
-            optional_R3 = lane_files[lane_files['filename'].str.contains("R3")]
-            if len(optional_files) == 2 and optional_R3:
-                opt = True
-                row.append(opt)
+            #optional_files = check_I1_or_I2_fastq(lane_files, lane)
+            #optional_R3 = lane_files[lane_files['filename'].str.contains("R3")]
+            #if len(optional_files) == 2 and optional_R3:
+            #    opt = True
+            #    row.append(opt)
         elif len(lane_files) ==3:
             required_files = check_R1_R2_R3_fastq(lane_files, lane)
             if len(required_files) == 2:
@@ -397,6 +397,8 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
                 row.append(req)
         elif len(lane_files) == 0:
             logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
+            row.append(req)
+            row.append(opt)
         #If # files anything else error
         else:
             #print("Mismatched # of files found")
