@@ -390,11 +390,11 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
             #if len(optional_files) == 2 and optional_R3:
             #    opt = True
             #    row.append(opt)
-        elif len(lane_files) ==3:
-            required_files = check_R1_R2_R3_fastq(lane_files, lane)
-            if len(required_files) == 2:
-                req = True
-                row.append(req)
+        #elif len(lane_files) ==3:
+        #    required_files = check_R1_R2_R3_fastq(lane_files, lane)
+        #    if len(required_files) == 2:
+        #        req = True
+        #        row.append(req)
         elif len(lane_files) == 0:
             logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
             row.append(req)
