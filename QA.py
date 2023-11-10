@@ -360,7 +360,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
     """
     #ASSUMPTION! Every aliquot has lanes that will be named in the format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
-    print(" in sub for 4 files")
+    #print(" in sub for 4 files")
     #required = ["R1", "R2"]
     #another optional file is R3 not handled by above check. Accounted for below.
     #optional = ["I1", "I2"]
@@ -461,6 +461,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             #needs testing
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot, missing_files)
+            print(check_raw_files)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
                 print("QA passed for ",tname," aliquot ", aliquot)
