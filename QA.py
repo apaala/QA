@@ -59,13 +59,13 @@ def main():
     #Read manifest file
     manifest = pd.read_csv(options.manifest_path, sep="\t")
     #print(len(manifest))
-
+    print("----Starting QA----")
     #List all files in the directory provided
     all_files = os.listdir(options.dir_path)
     #print(len(all_files))
 
     #Get matched and unmatched file names. Error if file in manifest not present in directory.
-    matched_files, unmatched_files= check_dir_vs_manifest(all_files, manifest)
+    matched_files, unmatched_files, missingfiles_flag= check_dir_vs_manifest(all_files, manifest)
     
     #Tests
     #print("The number of matched files found: ",len(matched_files))
@@ -83,16 +83,18 @@ def main():
     #md5sums_df.File = os.path.join( options.dir_path, md5sums_df.File)
     md5sums_df['full_path'] = options.dir_path + md5sums_df['full_path'].astype(str)
     #print(md5sums_df)
-    print("----")
+    
 
     ###commented checksum checking to test technique
     if not options.skip:
         logger.info("Validating checksums now--")
-        #print("Performing checksum tests!!!*****")
+        print("Performing checksum QA!!****")
+        #flag for mismatched checksums
         check_md5sums = match_md5sums_to_manifest(md5sums_df)
     else:
-        #print("Skipping checksum tests!!!****")
+        print("Skipping checksum QA!!!****")
         logger.info("Validating checksum step skipped!")
+        check_md5sums = None
     #print(check_md5sums)
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
@@ -439,6 +441,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
+            print("Starting QA for ",tname," aliquot ", aliquot)
             print(check_raw_files)
             if check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == True:
                 logger.info(f"All Required AND Optional Files for {tname} and Aliquot {aliquot} are present")
@@ -461,6 +464,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             #needs testing
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot, missing_files)
+            print("Starting QA for ",tname," aliquot ", aliquot)
             print(check_raw_files)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
@@ -518,6 +522,8 @@ def check_dir_vs_manifest(all_files, manifest):
     """
     #contains_all = manifest['filename'].isin(all_files).all()
     #if contains_all == False:
+    ##Flag for logging
+    flag = None
     #Get all files that are present in directory and in manifest
     contains_all = [x for x in all_files if x not in manifest.filename]
     #Get all files that are present in directory and missing in manifest. NBD. Add to log!
@@ -528,9 +534,12 @@ def check_dir_vs_manifest(all_files, manifest):
     missing_files = list(set(manifest.filename) - set(all_files))
     if len(missing_files)>0:
         logger.error(f"These files are in manifest but missing from the directory: %s ",missing_files)
+        flag = False
+    else:
+        flag = True
     #temporary message for debugging
     #print("Step 1 Complete: Checked Names")
-    return(contains_all, missing_files)
+    return(contains_all, missing_files, flag)
 
 def match_md5sums_to_manifest(md5sums_df):
     """ 
