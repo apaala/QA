@@ -165,7 +165,7 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
     required = ["_I1", "_I2"]
 
     #flag for capturing missing file
-    is_missing = True
+    is_missing = None
 
     for r in required:
         checkr = lane_files[lane_files['filename'].str.contains(r)]
@@ -177,8 +177,11 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
     matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
     #print(matches)
     #Check if names being checked have been reported as missing
-    if ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)].empty:
-        is_missing = False
+    if len(ext_req_checked) == 2:
+        if ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)].empty:
+            is_missing = False
+        else:
+            is_missing = True
     else:
         is_missing = True
     #add logic for checking if matched, else error
