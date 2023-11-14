@@ -550,7 +550,7 @@ def check_QA_for_aliquot(check_raw_files):
     #check_raw_files.Opt.replace(value='None',inplace = True)
     #check_raw_files['Opt'].fillna(value='None', inplace = True)
     check_raw_files.loc[check_raw_files['Opt'].isnull(), 'Opt'] = True
-    check_raw_files.Opt.replace(to_replace=[None], value='True', inplace=True)
+    check_raw_files.Opt.replace(to_replace=['None'], value='True', inplace=True)
     print("***")
     print(check_raw_files)
     if (~check_raw_files['Opt']).eq(False).any():
