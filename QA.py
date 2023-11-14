@@ -482,8 +482,8 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
             #for overall QA log return Opt and req along with tech and aliquot
             #print(check_raw_files)
-            overall_opt, overall_req = check_QA_for_aliquot(check_raw_files)
             print("Starting QA for ",tname," aliquot ", aliquot)
+            overall_opt, overall_req = check_QA_for_aliquot(check_raw_files)
             print(check_raw_files)
             if check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == True:
                 logger.info(f"All Required AND Optional Files for {tname} and Aliquot {aliquot} are present")
@@ -550,6 +550,7 @@ def check_QA_for_aliquot(check_raw_files):
     #check_raw_files.Opt.replace(value='None',inplace = True)
     #check_raw_files['Opt'].fillna(value='None', inplace = True)
     check_raw_files.loc[check_raw_files['Opt'].isnull(), 'Opt'] = True
+    check_raw_files.Opt.replace(to_replace=[None], value='True', inplace=True)
     print("***")
     print(check_raw_files)
     if (~check_raw_files['Opt']).eq(False).any():
