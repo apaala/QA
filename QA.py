@@ -311,6 +311,13 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
             else:
                 opt = False
                 row.append(opt)
+            ##check to see if all 4 iles are present and if not, fail flags
+            if len(optional_files) == 2 and len(required_files) == 2:
+                opt = True
+                req = True
+            else:
+                opt = False
+                req = False
         #If # files == 2, check for R1/2 
         elif len(lane_files) ==2:
             required_files = check_R1_R2_fastq(lane_files, lane, missing_files)
