@@ -553,7 +553,7 @@ def check_QA_for_aliquot(check_raw_files):
     print(check_raw_files)
     if (~check_raw_files['Opt']).any() == False:
         opt = "FAILED"
-    elif (check_raw_files['Opt']).all() == True:
+    elif (check_raw_files['Opt']).all():
         opt = "PASSED"
     if not check_raw_files['Req'].all():
         req = "FAILED"
