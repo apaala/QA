@@ -111,13 +111,20 @@ def main():
     #Log for overall printing
     print("QA status:------")
     if missingfiles_flag == True and check_md5sums == True:
-        print("Files in manifest and present in directory.")
-        print("md5sums in manifest match those calculated.")
+        file_checks["MissingFiles"] = "PASS"
+        file_checks["CheckSumQA"] = "PASS"
+        print(file_checks)
     elif missingfiles_flag == True and check_md5sums == None:
-        print("Files in manifest and present in directory.")
-        print("md5sums QA was skipped.")
+        #print("Files in manifest and present in directory.")
+        #print("md5sums QA was skipped.")
+        file_checks["MissingFiles"] = "PASS"
+        file_checks["CheckSumQA"] = "SKIPPED"
+        print(file_checks)
     else:
         print("QA FAILED, please check logs.")
+        file_checks["MissingFiles"] = "FAILED"
+        file_checks["CheckSumQA"] = "FAILED"
+        print(file_checks)
 
 def check_R1_R2_fastq(lane_files, lane, missing_files):
     #check for R1 and R2 fastq files for raw techniques
@@ -524,7 +531,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #temporary prints for new users. Will be replaced with logging.
         #print(" Step 4: Completed checks for ", tname, " and aliquot ", aliquot)
         master_QA_df = pd.DataFrame(master_QA_list, columns = ['Technique','Aliquot','Optional', 'Required'])
-        print(master_QA_df)
+        #print(master_QA_df)
         print("-------------")
     return master_QA_df
 
