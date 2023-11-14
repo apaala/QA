@@ -109,6 +109,7 @@ def main():
     #Check required files are present
 
     #Log for overall printing
+    print("QA status:------")
     if missingfiles_flag == True and check_md5sums == True:
         print("Files in manifest and present in directory.")
         print("md5sums in manifest match those calculated.")
