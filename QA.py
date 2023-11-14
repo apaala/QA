@@ -108,6 +108,16 @@ def main():
 
     #Check required files are present
 
+    #Log for overall printing
+    if missingfiles_flag == True and check_md5sums == True:
+        print("Files in manifest and present in directory.")
+        print("md5sums in manifest match those calculated.")
+    elif missingfiles_flag == True and check_md5sums == None:
+        print("Files in manifest and present in directory.")
+        print("md5sums QA was skipped.")
+    else:
+        print("QA FAILED, please check logs.")
+
 def check_R1_R2_fastq(lane_files, lane, missing_files):
     #check for R1 and R2 fastq files for raw techniques
     #check if required files are present
@@ -273,8 +283,8 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
         row = []
         row.append(lane)
         #Flags to check for missing files
-        req_in_dir = True
-        opt_in_dir = True
+        req_in_dir = None
+        opt_in_dir = None
         #If # files == 4, check for R1/2 and I1/2
         if len(lane_files) ==4:
             #check if required files are present
