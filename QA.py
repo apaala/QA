@@ -545,7 +545,8 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
 def check_QA_for_aliquot(check_raw_files):
     req = None
     opt = None
-    ['None' if v is None else v for v in check_raw_files["Opt"]]
+    check_raw_files = ['None' if v is None else v for v in check_raw_files["Opt"]]
+    print(check_raw_files)
     if (~check_raw_files['Opt']).any() == False:
         opt = "FAILED"
     elif (check_raw_files['Opt']).all() == True or (check_raw_files['Opt']).any() == 'None' and (~check_raw_files['Opt']).any():
