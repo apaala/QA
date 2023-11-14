@@ -495,6 +495,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #print(man_files.filename)
         #temporary prints for new users. Will be replaced with logging.
         #print(" Step 4: Completed checks for ", tname, " and aliquot ", aliquot)
+        print("-------------")
     return total_file_count
 
 def get_technique_file_list(techniques, master):
