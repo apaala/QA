@@ -543,13 +543,13 @@ def check_QA_for_aliquot(check_raw_files):
     req = None
     opt = None
     if (~check_raw_files['Opt']).any():
-        opt = False
+        opt = "FAILED"
     elif (check_raw_files['Opt']).all() == True or (check_raw_files['Opt']).any() == None and (~check_raw_files['Opt']).any():
-        opt = True
+        opt = "PASSED"
     if not check_raw_files['Req'].all():
-        req = False
+        req = "FAILED"
     else:
-        req = True
+        req = "PASSED"
     return opt,req
 
 def get_technique_file_list(techniques, master):
