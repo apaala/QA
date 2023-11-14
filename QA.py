@@ -174,14 +174,15 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
         if len(required_files) == 2 and len(ext_req_checked) !=2:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     #Check if only one character is different. should it be ext_req_checked???
-    matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
+    if len(ext_req_checked) ==2:
+        matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
+    else:
+        matches = False
     #print(matches)
     #Check if names being checked have been reported as missing
-    if len(ext_req_checked) == 2:
-        if ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)].empty:
-            is_missing = False
-        else:
-            is_missing = True
+    
+    if ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)].empty:
+        is_missing = False
     else:
         is_missing = True
     #add logic for checking if matched, else error
