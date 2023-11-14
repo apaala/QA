@@ -277,8 +277,8 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
     #For every aliquot there should be at least R1 and R2 for each lane.
     for lane in lanes_substring:
         #print(lane)
-        req = False
-        opt = False
+        req = None
+        opt = None
         lane_files = manifest[manifest['filename'].str.contains(lane)]
         #Add check to see if the filenames being checked exist in the directory
         row = []
