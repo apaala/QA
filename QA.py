@@ -480,6 +480,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
             #for overall QA log return Opt and req along with tech and aliquot
+            print(check_raw_files)
             overall_opt, overall_req = check_QA_for_aliquot(check_raw_files)
             print("Starting QA for ",tname," aliquot ", aliquot)
             print(check_raw_files)
