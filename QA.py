@@ -523,7 +523,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #print(man_files.filename)
         #temporary prints for new users. Will be replaced with logging.
         #print(" Step 4: Completed checks for ", tname, " and aliquot ", aliquot)
-        master_QA_df = pd.DataFrame(master_QA_list,columns = ['Technique','Aliquot','Optional', 'Required'])
+        master_QA_df = pd.DataFrame(master_QA_list, columns = ['Technique','Aliquot','Optional', 'Required'])
         print(master_QA_df)
         print("-------------")
     return master_QA_df
@@ -531,11 +531,11 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
 def check_QA_for_aliquot(check_raw_files):
     req = None
     opt = None
-    if df['Opt'].any() == False:
+    if check_raw_files['Opt'].any() == False:
         opt = False
-    elif df['Opt'].all() == True or df['Opt'].any() == None:
+    elif check_raw_files['Opt'].all() == True or check_raw_files['Opt'].any() == None:
         opt = True
-    if not df['Req'].all():
+    if not check_raw_files['Req'].all():
         req = False
     else:
         req = True
