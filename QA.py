@@ -546,13 +546,8 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
 def check_QA_for_aliquot(check_raw_files):
     req = None
     opt = None
-    #check_raw_files["Opt"] = ['None' if v is None else v for v in check_raw_files["Opt"]]
-    #check_raw_files.Opt.replace(value='None',inplace = True)
-    #check_raw_files['Opt'].fillna(value='None', inplace = True)
-    #check_raw_files.loc[check_raw_files['Opt'].isnull(), 'Opt'] = True
-    #check_raw_files.Opt.replace(to_replace=['None'], value='True', inplace=True)
-    print("***")
-    print(check_raw_files)
+    #print("***")
+    #print(check_raw_files)
     if (check_raw_files['Opt']).eq(False).any():
         opt = "FAILED"
     elif (check_raw_files['Opt']).eq(True).all():
