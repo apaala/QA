@@ -109,7 +109,9 @@ def main():
     #Check required files are present
 
     #Log for overall printing
-    print("QA status:------")
+    print("******************")
+    print("FINAL QA RESULTS")
+    print("******************")
     if missingfiles_flag == True and check_md5sums == True:
         file_checks["MissingFiles"] = "PASS"
         file_checks["CheckSumQA"] = "PASS"
