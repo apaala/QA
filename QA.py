@@ -120,6 +120,10 @@ def main():
         file_checks["MissingFiles"] = "PASS"
         file_checks["CheckSumQA"] = "SKIPPED"
         print(file_checks)
+    elif missingfiles_flag == False and check_md5sums == None:
+        file_checks["MissingFiles"] = "FAILED"
+        file_checks["CheckSumQA"] = "SKIPPED"
+        print(file_checks)
     else:
         print("QA FAILED, please check logs.")
         file_checks["MissingFiles"] = "FAILED"
