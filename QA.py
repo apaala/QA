@@ -315,6 +315,9 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
             if len(optional_files) == 2 and len(required_files) == 2:
                 opt = True
                 req = True
+            elif len(required_files) == 2 and len(optional_files) == 1:
+                opt = False
+                req = True
             else:
                 opt = False
                 req = False
