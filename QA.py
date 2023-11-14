@@ -446,7 +446,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
     #print(total_file_count)
     #print(file_list)
     data_type = file_list['data_type'].unique()
-
+    master_QA_list = []
     #All techniques that have R1, R2, I1, and I2 are in the list below. Add to list if new technique fits.
     raw_4_file_format_techniques = [ "10X Genomics Multiome;RNAseq", "10X Genomics Immune profiling;VDJ",
      "10X Genomics Immune profilling;GEX", "10xv2", "10xv3", "10xmultiome_cell_hash;RNA"]
@@ -466,6 +466,8 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #Checking to see which case the technique belongs to and preoceeding accordingly.
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
+            #for overall QA log return Opt and req along with tech and aliquot
+            overall_opt, overall_req = check_QA_for_aliquot(check_raw_files)
             print("Starting QA for ",tname," aliquot ", aliquot)
             print(check_raw_files)
             if check_raw_files['Req'].all() == True and check_raw_files['Opt'].all() == True:
@@ -486,6 +488,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             #    logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
             #else:
             #    logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
+            master_QA_list.append([tname, aliquot,overall_opt, overall_req ])
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             #needs testing
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot, missing_files)
@@ -520,8 +523,23 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #print(man_files.filename)
         #temporary prints for new users. Will be replaced with logging.
         #print(" Step 4: Completed checks for ", tname, " and aliquot ", aliquot)
+        master_QA_df = pd.DataFrame(master_QA_list,columns = ['Technique','Aliquot','Optional', 'Required'])
+        print(master_QA_df)
         print("-------------")
-    return check_raw_files
+    return master_QA_df
+
+def check_QA_for_aliquot(check_raw_files):
+    req = None
+    opt = None
+    if df['Opt'].any() == False:
+        opt = False
+    elif df['Opt'].all() == True or df['Opt'].any() == None:
+        opt = True
+    if not df['Req'].all():
+        req = False
+    else:
+        req = True
+    return opt,req
 
 def get_technique_file_list(techniques, master):
     technique = pd.read_csv(techniques, sep=",")
