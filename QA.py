@@ -507,7 +507,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         #temporary prints for new users. Will be replaced with logging.
         #print(" Step 4: Completed checks for ", tname, " and aliquot ", aliquot)
         print("-------------")
-    return total_file_count
+    return check_raw_files
 
 def get_technique_file_list(techniques, master):
     technique = pd.read_csv(techniques, sep=",")
