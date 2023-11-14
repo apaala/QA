@@ -287,7 +287,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
         req_in_dir = None
         opt_in_dir = None
         #If # files == 4, check for R1/2 and I1/2
-        if len(lane_files) ==4:
+        if len(lane_files) ==4 or len(lane_files) ==3:
             #check if required files are present
             required_files = check_R1_R2_fastq(lane_files, lane, missing_files)
             if required_files.loc[required_files['filename'].isin(missing_files)].empty:
