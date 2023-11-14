@@ -114,13 +114,13 @@ def main():
     print("FINAL QA RESULTS")
     print("******************")
     if missingfiles_flag == True and check_md5sums == True:
-        file_checks["MissingFiles"] = "PASS"
-        file_checks["CheckSumQA"] = "PASS"
+        file_checks["MissingFiles"] = "PASSED"
+        file_checks["CheckSumQA"] = "PASSED"
         print(file_checks)
     elif missingfiles_flag == True and check_md5sums == None:
         #print("Files in manifest and present in directory.")
         #print("md5sums QA was skipped.")
-        file_checks["MissingFiles"] = "PASS"
+        file_checks["MissingFiles"] = "PASSED"
         file_checks["CheckSumQA"] = "SKIPPED"
         print(file_checks)
     elif missingfiles_flag == False and check_md5sums == None:
