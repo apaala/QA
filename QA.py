@@ -18,6 +18,7 @@ import pandas as pd
 import logging
 import hashlib
 from pathlib import Path
+import numpy as np
 
 #parent_path = Path(__file__).resolve().parent
 #log_path = parent_path / "log.txt"
@@ -546,7 +547,7 @@ def check_QA_for_aliquot(check_raw_files):
     req = None
     opt = None
     #check_raw_files["Opt"] = ['None' if v is None else v for v in check_raw_files["Opt"]]
-    check_raw_files=check_raw_files.fillna(value='None')
+    check_raw_files.Opt.fillna(value='None',inplace = True)
     print(check_raw_files)
     if (~check_raw_files['Opt']).any() == False:
         opt = "FAILED"
