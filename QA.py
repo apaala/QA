@@ -533,7 +533,7 @@ def check_QA_for_aliquot(check_raw_files):
     opt = None
     if check_raw_files['Opt'].any() == False:
         opt = False
-    elif check_raw_files['Opt'].all() == True or check_raw_files['Opt'].any() == None:
+    elif check_raw_files['Opt'].all() == True or check_raw_files['Opt'].any() == None and not check_raw_files['Opt'].any() == False:
         opt = True
     if not check_raw_files['Req'].all():
         req = False
