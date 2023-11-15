@@ -551,7 +551,7 @@ def check_QA_for_aliquot(check_raw_files):
     opt = None
     #print("***")
     #print(check_raw_files)
-    if check_raw_files['Opt']:
+    if 'Opt' in check_raw_files.columns:
         if (check_raw_files['Opt']).eq(False).any():
             opt = "FAILED"
         elif (check_raw_files['Opt']).eq(True).all():
