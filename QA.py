@@ -99,22 +99,22 @@ def main():
         file_checks["MissingFiles"] = "PASSED"
         file_checks["CheckSumQA"] = "PASSED"
         #logger.info(f"In check_I1_or_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(file_checks))
-        print(file_checks.values)
+        print(file_checks)
     elif missingfiles_flag == True and check_md5sums == None:
         #print("Files in manifest and present in directory.")
         #print("md5sums QA was skipped.")
         file_checks["MissingFiles"] = "PASSED"
         file_checks["CheckSumQA"] = "SKIPPED"
-        print(file_checks.values)
+        print(file_checks)
     elif missingfiles_flag == False and check_md5sums == None:
         file_checks["MissingFiles"] = "FAILED"
         file_checks["CheckSumQA"] = "SKIPPED"
-        print(file_checks.values)
+        print(file_checks)
     else:
         print("QA FAILED, please check logs.")
         file_checks["MissingFiles"] = "FAILED"
         file_checks["CheckSumQA"] = "FAILED"
-        print(file_checks.values)
+        print(file_checks)
 
 def check_R1_R2_fastq(lane_files, lane, missing_files):
     #check for R1 and R2 fastq files for raw techniques
