@@ -508,6 +508,8 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             #needs testing
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot, missing_files)
             print("Starting QA for ",tname," aliquot ", aliquot)
+            #No optional files, find better solution check_QA_for_aliquot
+            overall_opt, overall_req = check_QA_for_aliquot(check_raw_files)
             print(check_raw_files)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
@@ -519,6 +521,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             #    logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
             #else:
             #    logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
+            master_QA_list.append([tname, aliquot,overall_opt, overall_req ])
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
             #needs testing
             check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot, missing_files)
