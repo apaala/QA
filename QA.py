@@ -364,7 +364,7 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
     return(pd.DataFrame(lane_checks, columns = ["Lane", "Req", "Opt"]))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
-    #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. Confirmed assumption with Suvvi on 10/19.
+    #ASSUMPTION! Every aliquot has 8 lanes that will be named in the format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print(" in sub for 3 files")
     #params for nuc_hash
@@ -525,6 +525,8 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
             #needs testing
             check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot, missing_files)
+            print("Starting QA for ",tname," aliquot ", aliquot)
+            print(check_raw_files)
             if check_raw_files['Req'].all():
                 logger.info(f"All Required Files for {tname} and Aliquot {aliquot} are present")
                 print("QA passed for ",tname," aliquot ", aliquot)
@@ -637,7 +639,7 @@ def match_md5sums_to_manifest(md5sums_df):
 
         # Create human readable error messages.
         logger.error(f"Found mismatches match_md5sums_to_manifest(). Filename : %s",",".join(md5sums_df.iloc[rows_mismatched,1]))
-        print("cheksum QC failed for the following",",".join(md5sums_df.iloc[rows_mismatched,1]))
+        print("checksum QC failed for the following",",".join(md5sums_df.iloc[rows_mismatched,1]))
         ###print(df_mask)
         #send_file_validation_email(errors, submission_id, submitter)
     else:
