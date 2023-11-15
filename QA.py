@@ -429,7 +429,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
 
 
 def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
-      """ This function checks the technique and calls appropriate functions.
+    """ This function checks the technique and calls appropriate functions.
     Input: 1) Manifest 
            2) File list
            3) Techniquees file.
