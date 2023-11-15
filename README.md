@@ -1,10 +1,19 @@
 # QA
 QA script for checking submissions
 
+Outputs:
+-stdout with user logs
+-detailed log with more information useful for debugging.
 
-Current Status:
+Inputs:
+Path to directory
+Path to manifest
+Path to techniques and aliquot
+Optional: -s to skip checking md5sums.
+Optional: -l to pass full path to file you want logs written to
 
-Tested only on submission: ypw4skw
+#NOTE: to pipe output to a file add -u after python like so:
+python -u QA.py *rest of the inputs*
 
 Following techniques are ready to be tested:
 -10X Genomics Multiome;RNAseq
@@ -18,10 +27,18 @@ Implemented and not tested:
 -10X Genomics Multiome;ATAC-seq
 -10xmultiome_cell_hash;ATAC
 
-NOTE: Not ready to be used by itself, just for testing as we figure out if its doing the right thing.
-Error logs should report pass/fail
+Error logs should report pass/fail as table below
+******************
+FINAL QA RESULTS
+******************
+                      Technique       Aliquot Optional Required MissingFiles CheckSumQA
+0  10X Genomics Multiome;RNAseq  NY-MX12001-1   FAILED   PASSED       FAILED    SKIPPED
+1  10X Genomics Multiome;RNAseq  NY-MX12001-2   PASSED   PASSED       PASSED    SKIPPED
 
-I have added print statements to make it easier to determine where it failed/ an issue is.
+Optional -> Optional files. False if Failed QA. None if not present.
+Required -> Required files.
+MissingFiles -> Were there files missing from directory that were present in the manifest
+CheckSumQA -> SKIPPED if user adds -s
 
 --------------------------------------------------------------------------------------------------
 Usage:
@@ -32,6 +49,7 @@ Clone repo:
 	Go to folder you want to put script in
 command:
 	git clone https://github.com/apaala/QA.git
+	svn co http://subversion.igs.umaryland.edu/svn/ENGR/nemo-aux/bican-qa/
 
 Step 2
 -------
@@ -49,13 +67,18 @@ Print usage:
 
 Step 4
 --------
-Launch on grid:
+Launch without grid:
+Ex.
+	qsub -cwd -b y -l mem_free=4G -P owhite-irc-ffs -q all.q -e testx.err -o testx.out -V python -u QA.py -d /path/to/dir//ypw4skw/ -m /manifest/ypw4skw_manifest.tsv -t tech.csv -s -l /path/to/logout.txt
 
+Launch on grid:
 Recommend using on grid, as md5sum checking can be time consuming.
 Ex. 
-	qsub -cwd -b y -l mem_free=4G -P owhite-irc-ffs -q all.q -e testx.err -o testx.out -V python QA.py -d /path/to/dir//ypw4skw/ -m /manifest/ypw4skw_manifest.tsv -t tech.csv
+	qsub -cwd -b y -l mem_free=4G -P owhite-irc-ffs -q all.q -e testx.err -o testx.out -V python -u QA.py -d /path/to/dir//ypw4skw/ -m /manifest/ypw4skw_manifest.tsv -t tech.csv
 
 *****Rename testx.err and testx.out to track your logs correctly. Recommend using something unique for every submission
+*****Pipe the stdout to a file to save user log.
+*****QSUB will append to out and err files, not overwrite.
 *****Use full paths.
 *****Not ready for production!
 
