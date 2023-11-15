@@ -32,7 +32,9 @@ import numpy as np
 #logger = logging.getLogger('app.' + __name__)
 
 logger = logging.getLogger('app.' + __name__)
-pd.set_option('display.max_columns', 20)
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
 def main():
     parser = argparse.ArgumentParser( description='User inputs to QA script')
     parser.add_argument("-d", "--dir_path", dest="dir_path",help="Path to directory with files to be assessed", metavar="PATH")
