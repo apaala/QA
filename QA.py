@@ -225,7 +225,7 @@ def check_R1_R2_R3_fastq(lane_files, lane):
         checkr = lane_files[lane_files['filename'].str.contains(r)]
         required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
         ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
-        if len(required_files) == 3 and len(ext_req_checked) !=3:
+        if len(required_files) == 4 and len(ext_req_checked) !=4:
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     #Check if only one character is different. Adding second match for R3 files.
     matches1 = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
@@ -239,6 +239,32 @@ def check_R1_R2_R3_fastq(lane_files, lane):
     #logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
     #temporary prints for new users. Will be replaced with logging.
     #print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
+    return(ext_req_checked)
+
+def check_R1_R2_nuchash_fastq(lane_files, lane):
+    #check for R1, R2 and R3 fastq files for raw 5 file techniques
+    #check if required files are present
+    required_files = pd.DataFrame()
+    
+    #Lists with corresponding substrings
+    required = ["_R1", "_R2", "nuc_hash"]
+
+    for r in required:
+        #Will need a more robust solution later as people name things inconsistently
+        checkr = lane_files[lane_files['filename'].str.contains(r)]
+        required_files = required_files.append(pd.DataFrame(data = checkr), ignore_index=True)
+        ext_req_checked = required_files[required_files['filename'].str.contains("fastq")]
+        if len(required_files) == 3 and len(ext_req_checked) !=3:
+            ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
+    #Check if only one character is different. Adding second match for R3 files.
+    matches1 = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
+    #matches2 = match(ext_req_checked.filename[0],ext_req_checked.filename[2])
+    #print(matches)
+    #add logic for checking if matched, else error
+    if matches1:
+        logger.info(f"In check_R1_R2_nuchash_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
+    else:
+        logger.error(f"In check_R1_R2_nuchash_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
     return(ext_req_checked)
 
 
@@ -279,7 +305,8 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
     These Files are expected to have specific substrings.
     Input: 1) List of expected files, 
            2) Manifest for aliquot 
-           3) aliquot string (not using currently may want to later.)
+           3) aliquot string (not using currently may want to later.
+           4) list of missing files.
     Output: DF with lane and T/F for required and optional files.
     """
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. 
@@ -363,7 +390,15 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
     #print("Performed checks for aliquot: ", aliquot)
     return(pd.DataFrame(lane_checks, columns = ["Lane", "Req", "Opt"]))
 
-def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files):
+def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files, missing_files):
+    """ This function checks for techniques that produce 5 files. 
+    These Files are expected to have specific substrings.
+    Input: 1) List of expected files, 
+           2) Manifest for aliquot 
+           3) aliquot string (not using currently may want to later.
+           4) list of missing files.
+    Output: DF with lane and T/F for required and optional files.
+    """
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in the format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     print(" in sub for 3 files")
@@ -396,7 +431,8 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
     These Files are expected to have specific substrings.
     Input: 1) List of expected files, 
            2) Manifest for aliquot 
-           3) aliquot string (not using currently may want to later.)
+           3) aliquot string (not using currently may want to later.
+           4) list of missing files.
     Output: DF with lane and T/F for required and optional files.
     """
     #ASSUMPTION! Every aliquot has lanes that will be named in the format below. Confirmed assumption with Suvvi on 10/19.
