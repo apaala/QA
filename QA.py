@@ -55,36 +55,21 @@ def main():
                     datefmt="%Y-%m-%d %H:%M:%S%z",
                     level=logging.DEBUG)
 
-    
-
     #Read manifest file
     manifest = pd.read_csv(options.manifest_path, sep="\t")
-    #print(len(manifest))
     print("----Starting QA----")
     #List all files in the directory provided
     all_files = os.listdir(options.dir_path)
-    #print(len(all_files))
 
     #Get matched and unmatched file names. Error if file in manifest not present in directory.
     matched_files, unmatched_files, missingfiles_flag= check_dir_vs_manifest(all_files, manifest)
-    
-    #Tests
-    #print("The number of matched files found: ",len(matched_files))
-    #print("-----")
-    #print("The number of mismatched files found: ",len(unmatched_files))
 
     #Logging matches and mismatches
     logger.info(f"The number of matched files found: {len(matched_files)}")
     logger.info(f"The number of mismatched files found: {len(unmatched_files)}")
     #generate md5sums
-    
-    #add logic to not get here if file names dont match
     md5sums_df = pd.DataFrame({"full_path": manifest.filename,"manifest_filename": manifest.filename,"manifest_checksum": manifest.checksum, "calculated_md5sum": ""})
-
-    #md5sums_df.File = os.path.join( options.dir_path, md5sums_df.File)
     md5sums_df['full_path'] = options.dir_path + md5sums_df['full_path'].astype(str)
-    #print(md5sums_df)
-    
 
     ###commented checksum checking to test technique
     if not options.skip:
@@ -96,17 +81,14 @@ def main():
         print("Skipping checksum QA!!!****")
         logger.info("Validating checksum step skipped!")
         check_md5sums = None
-    #print(check_md5sums)
+
     #check md5checksums
     master_techniques = open_techniques_with_pathlib("QC_techniques_master.csv")
-    #print(master_techniques)
     ##Should be a loop for multiple techniques and aliquots???
     #####
     file_list = get_technique_file_list(options.technique, master_techniques)
     file_checks = check_tech_assoc_files(manifest, file_list, options.technique, unmatched_files)
-    # Get the aliquot and use it to find file names. pass it manifest, file_list, techniques
-    #get_technique_info
-
+    
     #Check required files are present
 
     #Log for overall printing
@@ -116,6 +98,7 @@ def main():
     if missingfiles_flag == True and check_md5sums == True:
         file_checks["MissingFiles"] = "PASSED"
         file_checks["CheckSumQA"] = "PASSED"
+        #logger.info(f"In check_I1_or_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(file_checks))
         print(file_checks)
     elif missingfiles_flag == True and check_md5sums == None:
         #print("Files in manifest and present in directory.")
@@ -137,7 +120,6 @@ def check_R1_R2_fastq(lane_files, lane, missing_files):
     #check for R1 and R2 fastq files for raw techniques
     #check if required files are present
     required_files = pd.DataFrame()
-    
     #Lists with corresponding substrings
     required = ["_R1", "_R2"]
     #flag for capturing missing file
@@ -156,7 +138,6 @@ def check_R1_R2_fastq(lane_files, lane, missing_files):
         is_missing = True
     #Check if only one character is different. should it be ext_req_checked???
     matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
-    #print(matches)
     #add logic for checking if matched, else error
     if matches and is_missing == False:
         logger.info(f"In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
@@ -165,19 +146,14 @@ def check_R1_R2_fastq(lane_files, lane, missing_files):
         logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} are missing: %s ",",".join(missed_names.filename))
     else:
         logger.error(f"In check_R1_R2_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
-    #logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
-    #temporary prints for new users. Will be replaced with logging.
-    #print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
 
 def check_I1_I2_fastq(lane_files, lane, missing_files):
     #check for I1 and I2 fastq files for raw techniques
     #check if optional files are present.If yes both have to present!
     required_files = pd.DataFrame()
-    
     #List with corresponding substrings
     required = ["_I1", "_I2"]
-
     #flag for capturing missing file
     is_missing = None
 
@@ -192,9 +168,7 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
         matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
     else:
         matches = False
-    #print(matches)
     #Check if names being checked have been reported as missing
-    
     if ext_req_checked.loc[ext_req_checked['filename'].isin(missing_files)].empty:
         is_missing = False
     else:
@@ -207,16 +181,12 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
         logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} are missing: %s ",",".join(missed_names.filename))
     else:
         logger.error(f"In check_I1_I2_fastq(). Following files for lane: {lane} failed file name QC: %s ",",".join(ext_req_checked.filename))
-    #logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
-    #temporary prints for new users. Will be replaced with logging.
-    #print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
 
 def check_R1_R2_R3_fastq(lane_files, lane):
     #check for R1, R2 and R3 fastq files for raw 5 file techniques
     #check if required files are present
     required_files = pd.DataFrame()
-    
     #Lists with corresponding substrings
     required = ["_R1", "_R2", "_R3", "_I1"]
 
@@ -230,22 +200,18 @@ def check_R1_R2_R3_fastq(lane_files, lane):
     #Check if only one character is different. Adding second match for R3 files.
     matches1 = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
     matches2 = match(ext_req_checked.filename[0],ext_req_checked.filename[2])
-    #print(matches)
     #add logic for checking if matched, else error
     if matches1 and matches2:
         logger.info(f"In check_R1_R2_R3_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
     else:
         logger.error(f"In check_R1_R2_R3_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
-    #logger.info("In check_R1_R2_fastq(). Following files for lane: {lane} passed: %s ",ext_req_checked)
-    #temporary prints for new users. Will be replaced with logging.
-    #print("In check_R1_R2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
 
 def check_R1_R2_nuchash_fastq(lane_files, lane):
     #check for R1, R2 and R3 fastq files for raw 5 file techniques
     #check if required files are present
+    #incomplete. testing required.
     required_files = pd.DataFrame()
-    
     #Lists with corresponding substrings
     required = ["_R1", "_R2", "nuc_hash"]
 
@@ -258,8 +224,6 @@ def check_R1_R2_nuchash_fastq(lane_files, lane):
             ext_req_checked = required_files[required_files['filename'].str.contains("fq")]
     #Check if only one character is different. Adding second match for R3 files.
     matches1 = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
-    #matches2 = match(ext_req_checked.filename[0],ext_req_checked.filename[2])
-    #print(matches)
     #add logic for checking if matched, else error
     if matches1:
         logger.info(f"In check_R1_R2_nuchash_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
@@ -288,15 +252,11 @@ def check_I1_or_I2_fastq(lane_files, lane):
         logger.info(f"In check_I1_or_I2_fastq(). Following lane: {lane} only has one Optional file: %s ",",".join(ext_req_checked.filename))
     elif len(ext_req_checked) == 2:
         matches = match(ext_req_checked.filename[0],ext_req_checked.filename[1])
-        #print(matches)
         #add logic for checking if matched, else error
         if matches:
             logger.info(f"In check_I1_or_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
         else:
             logger.error(f"In check_I1_or_I2_fastq(). Following files for lane: {lane} failed: %s ",",".join(ext_req_checked.filename))
-    #logger.info(f"In check_I1_I2_fastq(). Following files for lane: {lane} passed: %s ",",".join(ext_req_checked.filename))
-    #temporary prints for new users. Will be replaced with logging.
-    #print("In check_I1_I2_fastq(). Following files for lane: ", lane," passed: ",','.join(ext_req_checked.filename))
     return(ext_req_checked)
 
 
@@ -315,7 +275,6 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
     #Lanes per aliquot
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
     logger.debug("In check_raw_4_file_format_techniques()")
-
     #Capture per lane file checks
     lane_checks = []
 
@@ -385,9 +344,6 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
             row.append(req)
             row.append(opt)
         lane_checks.append(row)
-        #print(lane_checks)
-        #check if both files are present and have the right extention
-    #print("Performed checks for aliquot: ", aliquot)
     return(pd.DataFrame(lane_checks, columns = ["Lane", "Req", "Opt"]))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files, missing_files):
@@ -437,13 +393,7 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
     """
     #ASSUMPTION! Every aliquot has lanes that will be named in the format below. Confirmed assumption with Suvvi on 10/19.
     lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
-    #print(" in sub for 4 files")
-    #required = ["R1", "R2"]
-    #another optional file is R3 not handled by above check. Accounted for below.
-    #optional = ["I1", "I2"]
-    
     format = ["fastq", "fq"]
-
     #Capture per lane file checks
     lane_checks = []
 
@@ -462,16 +412,6 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
             if len(required_files) == 4:
                 req = True
                 row.append(req)
-            #optional_files = check_I1_or_I2_fastq(lane_files, lane)
-            #optional_R3 = lane_files[lane_files['filename'].str.contains("R3")]
-            #if len(optional_files) == 2 and optional_R3:
-            #    opt = True
-            #    row.append(opt)
-        #elif len(lane_files) ==3:
-        #    required_files = check_R1_R2_R3_fastq(lane_files, lane)
-        #    if len(required_files) == 2:
-        #        req = True
-        #        row.append(req)
         elif len(lane_files) == 0:
             logger.warning(f"No files were found for lane {lane} in aliquot {aliquot}")
             row.append(req)
@@ -489,18 +429,20 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
 
 
 def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
+      """ This function checks the technique and calls appropriate functions.
+    Input: 1) Manifest 
+           2) File list
+           3) Techniquees file.
+           4) list of missing files.
+    Output: DF with lane and T/F for required and optional files.
+    """
     technique = pd.read_csv(techniques, sep=",")
     total_file_count = len(manifest.filename)
-    #lanes_substring = ["L001","L002","L003","L004","L005","L006","L007","L008"]
-    #print("total files---")
-    #print(total_file_count)
-    #print(file_list)
     data_type = file_list['data_type'].unique()
     master_QA_list = []
     #All techniques that have R1, R2, I1, and I2 are in the list below. Add to list if new technique fits.
     raw_4_file_format_techniques = [ "10X Genomics Multiome;RNAseq", "10X Genomics Immune profiling;VDJ",
      "10X Genomics Immune profilling;GEX", "10xv2", "10xv3", "10xmultiome_cell_hash;RNA"]
-    
     #All techniques that have R1, R2, R3, I1, and I2 are in the list below. Add to list if new technique fits.
     raw_5_file_format_techniques =[ "10X Genomics Multiome;ATAC-seq", "10xmultiome_cell_hash;ATAC"]
     
@@ -517,7 +459,6 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
         if data_type == 'raw' and tname in raw_4_file_format_techniques:
             check_raw_files = check_raw_4_file_format_techniques(file_list, man_files, aliquot, missing_files)
             #for overall QA log return Opt and req along with tech and aliquot
-            #print(check_raw_files)
             print("Starting QA for ",tname," aliquot ", aliquot)
             overall_opt, overall_req = check_QA_for_aliquot(check_raw_files)
             print(check_raw_files)
@@ -535,11 +476,8 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
                 logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present for following lanes %s ",",".join(map(str,missing_lanes)))
                 #logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
                 print("QA FAILED for ",tname," aliquot ", aliquot)
-            #if check_raw_files['Opt'].all():
-            #    logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
-            #else:
-            #    logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
             master_QA_list.append([tname, aliquot,overall_opt, overall_req ])
+
         elif data_type == 'raw' and tname in raw_5_file_format_techniques:
             #needs testing
             check_raw_files = check_raw_5_file_format_techniques(file_list, man_files, aliquot, missing_files)
@@ -553,11 +491,13 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
             else:
                 logger.error(f"All Required Files for {tname} and Aliquot {aliquot} are NOT present!")
                 print("QA FAILED for ",tname," aliquot ", aliquot)
+            #No optional files for these right now.
             #if check_raw_files['Opt'].all():
             #    logger.info(f"All Optional Files for {tname} and Aliquot {aliquot} are present")
             #else:
             #    logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
             master_QA_list.append([tname, aliquot,overall_opt, overall_req ])
+
         elif data_type == 'raw' and tname == "10xmultiome_cell_hash;hashing":
             #needs testing
             check_raw_files = check_raw_3_hash_file_format_techniques(file_list, man_files, aliquot, missing_files)
@@ -575,12 +515,7 @@ def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
                 logger.warning(f"All Optional Files for {tname} and Aliquot {aliquot} are NOT present!")
         else:
             print("files are not raw or in 4 format raw")
-            #check_raw_files = raw_file_techniques(man_files.filename, aliquot)
-        #print(man_files.filename)
-        #temporary prints for new users. Will be replaced with logging.
-        #print(" Step 4: Completed checks for ", tname, " and aliquot ", aliquot)
         master_QA_df = pd.DataFrame(master_QA_list, columns = ['Technique','Aliquot','Optional', 'Required'])
-        #print(master_QA_df)
         print("-------------")
     return master_QA_df
 
@@ -627,8 +562,6 @@ def check_dir_vs_manifest(all_files, manifest):
     Inputs: Directory Files and Manifest Files.
     Outputs: All files in both and missing files.
     """
-    #contains_all = manifest['filename'].isin(all_files).all()
-    #if contains_all == False:
     ##Flag for logging
     flag = None
     #Get all files that are present in directory and in manifest
@@ -725,53 +658,6 @@ def match(s1, s2):
             else:
                 ok = True
     return ok
-# def confirm_checksums_match(worksheet_name, checksum_column_name, file_dataframe):
-#     """
-#     Confirms that MD5 checksums of the submitted files match the checksums
-#     listed in the manifest. Mismatching checksums are reported to the
-#     submitter.
-
-#     Returns True if all checksums match; otherwise returns False.
-#     """
-#     logger.debug("In confirm_checksums_match().")
-
-#     checksums_ok = False
-#     error_message = "does not match value provided in the manifest"
-
-#     # Compute checksum on each submitted file.
-#     file_dataframe['observed_checksums'] = file_dataframe['submitted_filepath'].apply(compute_md5)
-    
-#     # Create mask to find mismatching observed and expected checksums.
-#     df_mask = (file_dataframe[checksum_column_name] != file_dataframe['observed_checksums'])
-    
-#     # Get a list of row indices where observed checksums do not match the 
-#     # checksum listed in the manifest.
-#     rows_mismatched = file_dataframe[df_mask].index.tolist()
-
-#     if len(rows_mismatched) > 0:
-#         # One or more submitted file's checksum does not match checksum listed
-#         # in manifest.
-
-#         # Create human readable error messages.
-#         errors = format_errors_for_excel_manifest(
-#             rows_mismatched,
-#             worksheet_name,
-#             checksum_column_name,
-#             error_message
-#         )
-
-#         update_submission_db(
-#             "error",
-#             ", ".join(errors),
-#             submission_id
-#         )
-
-#         #send_file_validation_email(errors, submission_id, submitter)
-#     else:
-#         checksums_ok = True
-
-#     return checksums_ok
-
 
 if __name__ == '__main__':
     main()
