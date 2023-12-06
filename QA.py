@@ -122,8 +122,6 @@ def main():
         print(file_checks)
         print("QA Failed. Please check Table for details.")
 
-def final_statement
-
 def check_R1_R2_fastq(lane_files, lane, missing_files):
     #check for R1 and R2 fastq files for raw techniques
     #check if required files are present
