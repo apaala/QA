@@ -158,8 +158,8 @@ def split_column_based_on_aliquotname(df, column_to_split, column_with_delimiter
     # Perform the split and assign to new columns
     for index, row in df.iterrows():
         delimiter = str(row[column_with_delimiter])
-        parts = row[column_to_split].split(delimiter, 1)  # Split only on the first occurrence
-
+        # Split only on the first occurrence
+        parts = row[column_to_split].split(delimiter, 1)
         df.at[index, column_to_split + '_Part1'] = parts[0]
         df.at[index, column_to_split + '_Part2'] = parts[1] if len(parts) > 1 else ''
 
