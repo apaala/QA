@@ -8,7 +8,7 @@ Steps:
 2. Check file names
 3. Check file md5sums
 4. Check if all required files for user prompted technique are present.
-5. ***** rename?
+5. Rename files to include flowcell
 """
 
 import getopt, sys, os
@@ -20,21 +20,12 @@ import hashlib
 from pathlib import Path
 import numpy as np
 
-#parent_path = Path(__file__).resolve().parent
-#log_path = parent_path / "log.txt"
-
-#logging.basicConfig(filename=log_path,
-##                    filemode='w',
-#                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-#                    datefmt="%Y-%m-%dT%H:%M:%S%z",
-#                    level=logging.DEBUG)
-
-#logger = logging.getLogger('app.' + __name__)
 
 logger = logging.getLogger('app.' + __name__)
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
+
 def main():
     parser = argparse.ArgumentParser( description='User inputs to QA script')
     parser.add_argument("-d", "--dir_path", dest="dir_path",help="Path to directory with files to be assessed", metavar="PATH")
@@ -43,6 +34,8 @@ def main():
     #Add option to direct logfile to a specific directory.
     parser.add_argument("-l", "--log", dest="log_dir",help="Full path where you would like to direct the detailed log file.", metavar="PATH")
     parser.add_argument("-s", "--skip", dest="skip",help="Flag to skip checksum tests. Only use for testing and checking technique assoc files", action='store_true')
+    #Option for writing updated manifest to file
+    parser.add_argument("-u", "--umanifest", dest="updated_man",help="Full path where you would like to direct the detailed log file.", metavar="PATH")
     options = parser.parse_args()
 
     #Logging details
@@ -92,7 +85,7 @@ def main():
     file_checks = check_tech_assoc_files(manifest, file_list, options.technique, unmatched_files)
     
     #Check required files are present
-
+    QA_flag = None
     #Log for overall printing
     print("*******************")
     print("FINAL QA RESULTS")
@@ -101,6 +94,7 @@ def main():
         file_checks["MissingFiles"] = "PASSED"
         file_checks["CheckSumQA"] = "PASSED"
         logger.info(f"QA Passed")
+        QA_flag = True
         print(file_checks)
         print("QA Passed. Please check Table for details.")
     elif missingfiles_flag == True and check_md5sums == None:
@@ -108,19 +102,91 @@ def main():
         #print("md5sums QA was skipped.")
         file_checks["MissingFiles"] = "PASSED"
         file_checks["CheckSumQA"] = "SKIPPED"
+        QA_flag = True
         print(file_checks)
         print("QA Passed. Please check Table for details.")
     elif missingfiles_flag == False and check_md5sums == None:
         file_checks["MissingFiles"] = "FAILED"
         file_checks["CheckSumQA"] = "SKIPPED"
+        QA_flag = False
         print(file_checks)
         print("QA Failed. Please check Table for details.")
     else:
         print("QA FAILED, please check logs.")
         file_checks["MissingFiles"] = "FAILED"
         file_checks["CheckSumQA"] = "FAILED"
+        QA_flag = False
         print(file_checks)
         print("QA Failed. Please check Table for details.")
+    #Renaming files below
+    updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
+    #fnx to rename the files
+    rename_files(renaming_df, 'filename', 'updated_filename')
+    #print(updated_manifest)
+    #Write outputs
+    if options.updated_man:
+        updated_manifest.to_csv(options.updated_man, index=False, sep='\t')
+    else:
+        updated_manifest.to_csv('updated_manifest.txt', index=False, sep='\t')
+    #for sanity check writing old and new filenames, maybe include in log file later.
+    renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
+
+
+
+def split_column_based_on_aliquotname(df, column_to_split, column_with_delimiter):
+    """
+    Split a string in one column into two parts based on a delimiter specified in another column,
+    and place these parts into two separate new columns.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to modify.
+    column_to_split (str): The name of the column with strings to split.
+    column_with_delimiter (str): The name of the column with the delimiter.
+
+    Returns:
+    pandas.DataFrame: The modified DataFrame with two new columns.
+    """
+
+    # Check if the columns exist in the DataFrame
+    if column_to_split not in df.columns or column_with_delimiter not in df.columns:
+        raise ValueError("Specified columns not found in DataFrame")
+
+    # Initialize the new columns
+    df[column_to_split + '_Part1'] = None
+    df[column_to_split + '_Part2'] = None
+
+    # Perform the split and assign to new columns
+    for index, row in df.iterrows():
+        delimiter = str(row[column_with_delimiter])
+        parts = row[column_to_split].split(delimiter, 1)  # Split only on the first occurrence
+
+        df.at[index, column_to_split + '_Part1'] = parts[0]
+        df.at[index, column_to_split + '_Part2'] = parts[1] if len(parts) > 1 else ''
+
+    return df
+
+
+def prepend_string_to_column(df, column_name, string_to_prepend):
+    """
+    Prepend a string to all values in a specified column of a DataFrame.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to modify.
+    column_name (str): The name of the column to modify.
+    string_to_prepend (str): The string to prepend to each value in the column.
+
+    Returns:
+    pandas.DataFrame: The modified DataFrame with the string prepended.
+    """
+
+    # Check if the column exists in the DataFrame
+    if column_name not in df.columns:
+        raise ValueError(f"Column '{column_name}' not found in DataFrame")
+
+    # Prepend the string to each value in the column
+    df[column_name] = string_to_prepend + df[column_name].astype(str)
+
+    return df
 
 def check_R1_R2_fastq(lane_files, lane, missing_files):
     #check for R1 and R2 fastq files for raw techniques
@@ -586,6 +652,349 @@ def check_dir_vs_manifest(all_files, manifest):
     #temporary message for debugging
     #print("Step 1 Complete: Checked Names")
     return(contains_all, missing_files, flag)
+
+def renaming_manifest_fastq(manifest, QA_flag, dpath):
+    manifest_copy = manifest
+    #Flag for columns N/O/P check. This will skip the correctly formatted NYGC submission.
+    NOP = None
+    rename_3 = find_rows_with_extensions(manifest,'filename', ['.csv', '.xml'])
+    print(rename_3)
+    #Assumption: Only one Flowcell per manifest. Confirmed with Suvvi on 12/06/23
+    flowcell = manifest['flow_cell_name'].unique()
+    ###Checking for flowcell in NOP
+    #Check if 14,15,16 have flowcell in the name demultiplex_stats_filename,run_parameters_filename and top_unknown_barcodes_filename
+    #declare df to hold old and new filenames
+    #old_new=pd.DataFrame(columns=['old', 'new'])
+    if(len(flowcell)==1):
+        #Detect unique values
+        dsf_t = list(manifest.demultiplex_stats_filename.unique())
+        dsf = [x for x in dsf_t if str(x) != 'nan']
+        print(dsf)
+        rpf_t = list(manifest.run_parameters_filename.unique())
+        rpf = [x for x in rpf_t if str(x) != 'nan']
+        tubf_t = list(manifest.top_unknown_barcodes_filename.unique())
+        tubf = [x for x in tubf_t if str(x) != 'nan']
+        #N
+        if any(flowcell[0] in s for s in dsf):
+            #check that there arent >2 values (nan and filename)
+            print("No changes necessary for N")
+        else:
+            #prepend the flowcell to column.
+            old = dsf
+            print(old)
+            oldp = prepend_path_to_variable(old[0], dpath)
+            print(oldp)
+            #prepend the flowcell to column.
+            hold = prepend_string_to_column(manifest, 'demultiplex_stats_filename', flowcell[0])
+            manifest_copy['demultiplex_stats_filename'] = hold['demultiplex_stats_filename']
+            new = manifest_copy['demultiplex_stats_filename'].unique()
+            print(new[0])
+            newp = prepend_path_to_variable(new[0], dpath)
+            print(newp)
+            #add renAMING THESE FILES HERE. EASIEST TO HANDLE.
+            rename_info_file(oldp, newp)
+            
+        #O
+        if any(flowcell[0] in s for s in rpf):
+            print("No changes necessary for O")
+            #check that there arent >2 values (nan and filename)
+        else:
+            #prepend the flowcell to column.
+            old = rpf
+            oldp = prepend_path_to_variable(old[0], dpath)
+            hold = prepend_string_to_column(manifest, 'run_parameters_filename', flowcell[0])
+            manifest_copy['run_parameters_filename'] = hold['run_parameters_filename']
+            new = manifest_copy['run_parameters_filename'].unique()
+            newp = prepend_path_to_variable(new[0], dpath)
+            rename_info_file(oldp, newp)
+        #P
+        if any(flowcell[0] in s for s in tubf):
+            print("No channges necessary for P")
+            #check that there arent >2 values (nan and filename)
+        else:
+            old = tubf
+            oldp = prepend_path_to_variable(old[0], dpath)
+            print(oldp)
+            #prepend the flowcell to column.
+            hold = prepend_string_to_column(manifest, 'top_unknown_barcodes_filename', flowcell[0])
+            manifest_copy['top_unknown_barcodes_filename'] = hold['top_unknown_barcodes_filename']
+            new = manifest_copy['top_unknown_barcodes_filename'].unique()
+            newp = prepend_path_to_variable(new[0], dpath)
+            print(newp)
+            rename_info_file(oldp, newp)
+
+    #Split filename into 2 sub strings 
+    split_filenames = split_column_based_on_aliquotname(manifest, 'filename', 'library_aliquot_name')
+
+    #prepend flowcell name
+    appended = prepend_string_to_column(manifest, 'filename_Part2', flowcell[0])
+
+    #Deal with 3 non fq files
+    non_fq = find_files_without_extension(manifest_copy, 'filename', '.gz', 'flow_cell_name')
+
+    #Make updated filename. 
+    manifest_copy['updated_filename'] = appended['library_aliquot_name'] +"_"+ appended['filename_Part2']
+    
+    #Make df for filename change.
+    renamed_filt = manifest_copy[['filename', 'updated_filename']].copy()
+    renaming_df = renamed_filt.dropna()
+    hold = replace_double_underscore(renaming_df, 'updated_filename')
+    renaming_df['updated_filename']= hold['updated_filename']
+    print(renaming_df)
+    manifest_copy['filename'] = non_fq['non_fq']
+    updated_names = replace_values_if_contains(manifest_copy, 'filename', 'updated_filename', 'gz')
+        
+    
+    #prepend paths of files to columns
+    hold1 = prepend_directory_path(renaming_df, 'filename', dpath)
+    renaming_df['filename']=hold1['filename']
+    hold1 = replace_double_underscore(renaming_df, 'filename')
+    renaming_df['filename']=hold1['filename']
+
+    hold2 = prepend_directory_path(renaming_df, 'updated_filename', dpath)
+    renaming_df['updated_filename']=hold2['updated_filename']
+    #hold2 = replace_double_underscore(renaming_df, 'updated_filename')
+    #renaming_df['updated_filename']=hold2['updated_filename']
+    #renaming_df['updated_filename'] = replace_double_underscore(renaming_df, 'updated_filename')
+    #print(renaming_df['filename'])
+    #print(renaming_df['updated_filename'])
+    
+
+    manifest_copy['filename'] = updated_names['filename']
+    #drop extra columns
+    manifest_copy.drop(['filename_Part1', 'filename_Part2', 'non_fq', 'updated_filename'], axis=1, inplace=True)
+
+    manifest_temp = replace_double_underscore(manifest_copy, 'filename')
+    manifest_f1 =  delete_values_based_on_string(manifest_temp, 'demultiplex_stats_filename','file_format','run metrics')
+    manifest_f2 =  delete_values_based_on_string(manifest_f1, 'run_parameters_filename','file_format','run metrics')
+    manifest_formatted =  delete_values_based_on_string(manifest_f2, 'top_unknown_barcodes_filename','file_format','run metrics')
+    #Save files
+    split_filenames.to_csv('split.csv', sep='\t')
+    manifest_formatted.to_csv('updated_manifest.txt', index=False, sep='\t')
+    renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
+    
+    #Handle non fastq files
+    
+    return manifest_formatted,renaming_df
+
+def find_rows_with_extensions(df, column_name, extensions):
+    """
+    Find all rows in a DataFrame where the specified column's entries end with certain extensions.
+
+    Args:
+    df (pandas.DataFrame): The DataFrame to search.
+    column_name (str): The name of the column to check.
+    extensions (list of str): The list of extensions to look for (e.g., ['.csv', '.xml']).
+
+    Returns:
+    pandas.DataFrame: A DataFrame containing only the rows where the column entries match the specified extensions.
+    """
+    # Filter the DataFrame based on the specified extensions
+    filtered_df = df[df[column_name].astype(str).str.endswith(tuple(extensions))]
+
+    return filtered_df
+
+def delete_values_based_on_string(df, target_column, condition_column, string_to_check):
+    """
+    Deletes values in one DataFrame column if a specified string is found in another column.
+
+    :param df: DataFrame containing the data.
+    :param target_column: The name of the column whose values are to be deleted.
+    :param condition_column: The name of the column to check for the specified string.
+    :param string_to_check: The string to check for in the condition column.
+    :return: DataFrame with values deleted based on the condition.
+    """
+    mask = df[condition_column].str.contains(string_to_check, na=False)
+    df.loc[mask, target_column] = np.nan
+    return df
+
+def rename_info_file(old_file_path, new_file_path):
+    """
+    Rename a file from one path to another.
+
+    Args:
+    old_file_path (str): The current file path.
+    new_file_path (str): The new file path.
+
+    Returns:
+    bool: True if the file was successfully renamed, False otherwise.
+    """
+    try:
+        # Rename the file
+        os.rename(old_file_path, new_file_path)
+        return True
+    except Exception as e:
+        print(f"Error occurred during renaming: {e}")
+        return False
+
+def rename_files(dataframe, original_column, new_column):
+    """
+    Renames files based on names in two columns of a DataFrame.
+
+    Parameters:
+    dataframe (pd.DataFrame): The DataFrame containing the file names.
+    original_column (str): The name of the column with the original file names.
+    new_column (str): The name of the column with the new file names.
+    """
+    for index, row in dataframe.iterrows():
+        original_name = row[original_column]
+        new_name = row[new_column]
+        
+        # Check if the original file exists and rename it
+        if os.path.exists(original_name):
+            os.rename(original_name, new_name)
+        else:
+            print(f"File {original_name} does not exist.")
+
+def replace_double_underscore(df, column_name):
+    """
+    Replaces all double underscores with single underscores in a specified column of a DataFrame.
+
+    :param df: DataFrame containing the data.
+    :param column_name: The name of the column in which to replace double underscores.
+    :return: DataFrame with the replacements made.
+    """
+    df[column_name] = df[column_name].str.replace('__', '_', regex=False)
+    return df
+
+
+def replace_values_if_contains(df, target_column, replacement_column, string_to_check):
+    """
+    Replaces values in a DataFrame column with values from another column if they contain a specific string.
+
+    :param df: DataFrame to operate on.
+    :param target_column: The name of the column whose values are to be replaced.
+    :param replacement_column: The name of the column from which to take replacement values.
+    :param string_to_check: The string to check for in the target column values.
+    :return: DataFrame with replaced values.
+    """
+    mask = df[target_column].str.contains(string_to_check, na=False)
+    df.loc[mask, target_column] = df.loc[mask, replacement_column]
+    return df
+
+def find_files_without_extension(df, column_name, excluded_extension,prepend_column ):
+    """
+    Finds all files in the specified DataFrame column that do not have the specified extension.
+
+    :param df: DataFrame containing the file names.
+    :param column_name: Name of the column in the DataFrame containing the file names.
+    :param excluded_extension: The file extension to exclude (e.g., 'txt').
+    :return: A list of file names without the specified extension.
+    """
+    if excluded_extension.startswith('.'):
+        excluded_extension = excluded_extension[1:]
+    def rename_file(row):
+        file_name = row[column_name]
+        if not file_name.endswith('.' + excluded_extension):
+            if(row[prepend_column] in file_name):
+                print("No need to prepend")
+            else:
+                return row[prepend_column] + '_' + file_name
+        return file_name
+
+    df['non_fq'] = df.apply(rename_file, axis=1)
+    return df
+
+    return df[df[column_name].apply(lambda x: not x.endswith('.' + excluded_extension))][column_name].tolist()
+
+def split_column_based_on_aliquotname(df, column_to_split, column_with_delimiter):
+    """
+    Split a string in one column into two parts based on a delimiter specified in another column,
+    and place these parts into two separate new columns.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to modify.
+    column_to_split (str): The name of the column with strings to split.
+    column_with_delimiter (str): The name of the column with the delimiter.
+
+    Returns:
+    pandas.DataFrame: The modified DataFrame with two new columns.
+    """
+
+    # Check if the columns exist in the DataFrame
+    if column_to_split not in df.columns or column_with_delimiter not in df.columns:
+        raise ValueError("Specified columns not found in DataFrame")
+
+    # Initialize the new columns
+    df[column_to_split + '_Part1'] = None
+    df[column_to_split + '_Part2'] = None
+
+    # Perform the split and assign to new columns
+    for index, row in df.iterrows():
+        delimiter = str(row[column_with_delimiter])
+        parts = row[column_to_split].split(delimiter, 1)# Split only on the first occurrence
+
+        df.at[index, column_to_split + '_Part1'] = parts[0]
+        df.at[index, column_to_split + '_Part2'] = parts[1] if len(parts) > 1 else ''
+
+    return df
+
+
+def prepend_string_to_column(df, column_name, string_to_prepend):
+    """
+    Prepend a string to all values in a specified column of a DataFrame.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to modify.
+    column_name (str): The name of the column to modify.
+    string_to_prepend (str): The string to prepend to each value in the column.
+
+    Returns:
+    pandas.DataFrame: The modified DataFrame with the string prepended.
+    """
+
+    # Check if the column exists in the DataFrame
+    if column_name not in df.columns:
+        raise ValueError(f"Column '{column_name}' not found in DataFrame")
+
+    # Prepend the string to each value in the column
+    df[column_name] = string_to_prepend +"_"+ df[column_name].astype(str)
+
+    return df
+
+def prepend_path_to_variable(variable, path_to_append):
+    """
+    Append a path to a variable, ensuring the correct format.
+
+    Args:
+    variable (str): The original variable.
+    path_to_append (str): The path to append.
+
+    Returns:
+    str: The variable with the path appended.
+    """
+    # Ensure the path_to_append starts with a '/'
+    if not path_to_append.startswith('/'):
+        path_to_append = '/' + path_to_append
+    if not path_to_append.endswith('/'):
+        path_to_append += '/'
+
+    # Append the path to the variable
+    variable_with_path = path_to_append + variable 
+
+    return variable_with_path
+
+
+def prepend_directory_path(df, column_name, directory_path):
+    """
+    Prepend a directory path to every entry in the specified column of a DataFrame.
+
+    Args:
+    df (pandas.DataFrame): The DataFrame containing the column.
+    column_name (str): The name of the column to modify.
+    directory_path (str): The directory path to prepend.
+
+    Returns:
+    pandas.DataFrame: The modified DataFrame.
+    """
+    # Ensure the directory path ends with a '/'
+    if not directory_path.endswith('/'):
+        directory_path += '/'
+
+    # Prepend the directory path to each entry in the column
+    df[column_name] = directory_path + df[column_name].astype(str)
+
+    return df
 
 def match_md5sums_to_manifest(md5sums_df):
     """ 
