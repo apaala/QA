@@ -35,7 +35,10 @@ def main():
     parser.add_argument("-l", "--log", dest="log_dir",help="Full path where you would like to direct the detailed log file.", metavar="PATH")
     parser.add_argument("-s", "--skip", dest="skip",help="Flag to skip checksum tests. Only use for testing and checking technique assoc files", action='store_true')
     #Option for writing updated manifest to file
-    parser.add_argument("-u", "--umanifest", dest="updated_man",help="Full path where you would like to direct the detailed log file.", metavar="PATH")
+    parser.add_argument("-u", "--umanifest", dest="updated_man",help="Full path where you would like to direct the updated manifest file.", metavar="PATH")
+    #Option to do renaming
+    parser.add_argument("-r", "--rename", dest="rename",help="Flag to rename the files by adding flowcell name", action='store_true')
+
     options = parser.parse_args()
 
     #Logging details
@@ -121,15 +124,16 @@ def main():
     #Renaming files below
     updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
     #fnx to rename the files
-    rename_files(renaming_df, 'filename', 'updated_filename')
-    #print(updated_manifest)
-    #Write outputs
-    if options.updated_man:
-        updated_manifest.to_csv(options.updated_man, index=False, sep='\t')
-    else:
-        updated_manifest.to_csv('updated_manifest.txt', index=False, sep='\t')
-    #for sanity check writing old and new filenames, maybe include in log file later.
-    renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
+    if options.rename:
+        rename_files(renaming_df, 'filename', 'updated_filename')
+        #print(updated_manifest)
+        #Write outputs
+        if options.updated_man:
+            updated_manifest.to_csv(options.updated_man, index=False, sep='\t')
+        else:
+            updated_manifest.to_csv('updated_manifest.txt', index=False, sep='\t')
+        #for sanity check writing old and new filenames, maybe include in log file later.
+        renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
 
 
 
