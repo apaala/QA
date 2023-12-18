@@ -87,6 +87,20 @@ def main():
     file_list = get_technique_file_list(options.technique, master_techniques)
     file_checks = check_tech_assoc_files(manifest, file_list, options.technique, unmatched_files)
     
+    #Renaming files below
+    updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
+    #fnx to rename the files
+    if options.rename and QA_flag== True:
+        rename_files(renaming_df, 'filename', 'updated_filename')
+        #print(updated_manifest)
+        #Write outputs
+        if options.updated_man:
+            updated_manifest.to_csv(options.updated_man, index=False, sep='\t')
+        else:
+            updated_manifest.to_csv('updated_manifest.txt', index=False, sep='\t')
+        #for sanity check writing old and new filenames, maybe include in log file later.
+        renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
+    
     #Check required files are present
     QA_flag = None
     #Log for overall printing
@@ -101,8 +115,6 @@ def main():
         print(file_checks)
         print("QA Passed. Please check Table for details.")
     elif missingfiles_flag == True and check_md5sums == None:
-        #print("Files in manifest and present in directory.")
-        #print("md5sums QA was skipped.")
         file_checks["MissingFiles"] = "PASSED"
         file_checks["CheckSumQA"] = "SKIPPED"
         QA_flag = True
@@ -115,25 +127,11 @@ def main():
         print(file_checks)
         print("QA Failed. Please check Table for details.")
     else:
-        print("QA FAILED, please check logs.")
         file_checks["MissingFiles"] = "FAILED"
         file_checks["CheckSumQA"] = "FAILED"
         QA_flag = False
         print(file_checks)
         print("QA Failed. Please check Table for details.")
-    #Renaming files below
-    updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
-    #fnx to rename the files
-    if options.rename and QA_flag== True:
-        rename_files(renaming_df, 'filename', 'updated_filename')
-        #print(updated_manifest)
-        #Write outputs
-        if options.updated_man:
-            updated_manifest.to_csv(options.updated_man, index=False, sep='\t')
-        else:
-            updated_manifest.to_csv('updated_manifest.txt', index=False, sep='\t')
-        #for sanity check writing old and new filenames, maybe include in log file later.
-        renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
 
 
 
@@ -193,6 +191,18 @@ def prepend_string_to_column(df, column_name, string_to_prepend):
     return df
 
 def check_R1_R2_fastq(lane_files, lane, missing_files):
+    """
+    Check R1 and R2 files for raw techniques. It checks if the naming is 
+    consistent and required files are present.
+
+    Parameters:
+    lane_files (pandas.DataFrame): DataFrame with files belonging to specific Lane.
+    lane (str): The name of the Lane for which files are being checked.
+    missing_files (str): DataFrame with missing files.
+
+    Returns:
+    pandas.DataFrame: Dataframe with results.
+    """
     #check for R1 and R2 fastq files for raw techniques
     #check if required files are present
     required_files = pd.DataFrame()
@@ -225,6 +235,18 @@ def check_R1_R2_fastq(lane_files, lane, missing_files):
     return(ext_req_checked)
 
 def check_I1_I2_fastq(lane_files, lane, missing_files):
+    """
+    Check I1 and I2 files for raw techniques. It checks if the naming is 
+    consistent and both sets of optional files are present.
+
+    Parameters:
+    lane_files (pandas.DataFrame): DataFrame with files belonging to specific Lane.
+    lane (str): The name of the Lane for which files are being checked.
+    missing_files (str): DataFrame with missing files.
+
+    Returns:
+    pandas.DataFrame: Dataframe with results.
+    """
     #check for I1 and I2 fastq files for raw techniques
     #check if optional files are present.If yes both have to present!
     required_files = pd.DataFrame()
@@ -668,7 +690,6 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
     ###Checking for flowcell in NOP
     #Check if 14,15,16 have flowcell in the name demultiplex_stats_filename,run_parameters_filename and top_unknown_barcodes_filename
     #declare df to hold old and new filenames
-    #old_new=pd.DataFrame(columns=['old', 'new'])
     if(len(flowcell)==1):
         #Detect unique values
         dsf_t = list(manifest.demultiplex_stats_filename.unique())
@@ -685,16 +706,16 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
         else:
             #prepend the flowcell to column.
             old = dsf
-            print(old)
+            #print(old)
             oldp = prepend_path_to_variable(old[0], dpath)
-            print(oldp)
+            #print(oldp)
             #prepend the flowcell to column.
             hold = prepend_string_to_column(manifest, 'demultiplex_stats_filename', flowcell[0])
             manifest_copy['demultiplex_stats_filename'] = hold['demultiplex_stats_filename']
             new = manifest_copy['demultiplex_stats_filename'].unique()
-            print(new[0])
+            #print(new[0])
             newp = prepend_path_to_variable(new[0], dpath)
-            print(newp)
+            #print(newp)
             #add renAMING THESE FILES HERE. EASIEST TO HANDLE.
             rename_info_file(oldp, newp)
             
@@ -718,13 +739,13 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
         else:
             old = tubf
             oldp = prepend_path_to_variable(old[0], dpath)
-            print(oldp)
+            #print(oldp)
             #prepend the flowcell to column.
             hold = prepend_string_to_column(manifest, 'top_unknown_barcodes_filename', flowcell[0])
             manifest_copy['top_unknown_barcodes_filename'] = hold['top_unknown_barcodes_filename']
             new = manifest_copy['top_unknown_barcodes_filename'].unique()
             newp = prepend_path_to_variable(new[0], dpath)
-            print(newp)
+            #print(newp)
             rename_info_file(oldp, newp)
 
     #Split filename into 2 sub strings 
@@ -744,7 +765,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
     renaming_df = renamed_filt.dropna()
     hold = replace_double_underscore(renaming_df, 'updated_filename')
     renaming_df['updated_filename']= hold['updated_filename']
-    print(renaming_df)
+    #print(renaming_df)
     manifest_copy['filename'] = non_fq['non_fq']
     updated_names = replace_values_if_contains(manifest_copy, 'filename', 'updated_filename', 'gz')
         
