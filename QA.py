@@ -1018,7 +1018,7 @@ def prepend_directory_path(df, column_name, directory_path):
         directory_path += '/'
 
     # Prepend the directory path to each entry in the column
-    df[column_name] = directory_path + df[column_name].astype(str)
+    df.loc[:,column_name] = directory_path + df[column_name].astype(str)
 
     return df
 
