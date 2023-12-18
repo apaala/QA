@@ -704,7 +704,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
         #N
         if any(flowcell[0] in s for s in dsf):
             #check that there arent >2 values (nan and filename)
-            print("No changes necessary for N")
+            logger.info(f"No changes necessary for demultiplex_stats_filename")
         else:
             #prepend the flowcell to column.
             old = dsf
@@ -723,7 +723,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
             
         #O
         if any(flowcell[0] in s for s in rpf):
-            print("No changes necessary for O")
+            logger.info(f"No changes necessary for run_parameters_filename")
             #check that there arent >2 values (nan and filename)
         else:
             #prepend the flowcell to column.
@@ -736,7 +736,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
             rename_info_file(oldp, newp)
         #P
         if any(flowcell[0] in s for s in tubf):
-            print("No channges necessary for P")
+            logger.info(f"No changes necessary for top_unknown_barcodes_filename")
             #check that there arent >2 values (nan and filename)
         else:
             old = tubf
@@ -914,7 +914,7 @@ def find_files_without_extension(df, column_name, excluded_extension,prepend_col
         file_name = row[column_name]
         if not file_name.endswith('.' + excluded_extension):
             if(row[prepend_column] in file_name):
-                print("No need to prepend")
+                logger.info(f"No need to prepend")
             else:
                 return row[prepend_column] + '_' + file_name
         return file_name
