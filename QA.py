@@ -118,7 +118,7 @@ def main():
         QA_flag = False
         print(file_checks)
         print("QA Failed. Please check Table for details.")
-        
+
     #Renaming files below
     updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
     #fnx to rename the files
@@ -765,7 +765,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
     renamed_filt = manifest_copy[['filename', 'updated_filename']].copy()
     renaming_df = renamed_filt.dropna()
     hold = replace_double_underscore(renaming_df, 'updated_filename')
-    renaming_df['updated_filename']= hold['updated_filename']
+    renaming_df.loc[:,'updated_filename']= hold['updated_filename']
     #print(renaming_df)
     manifest_copy['filename'] = non_fq['non_fq']
     updated_names = replace_values_if_contains(manifest_copy, 'filename', 'updated_filename', 'gz')
@@ -773,7 +773,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
     
     #prepend paths of files to columns
     hold1 = prepend_directory_path(renaming_df, 'filename', dpath)
-    renaming_df['filename']=hold1['filename']
+    renaming_df.loc[:,'filename']=hold1['filename']
     hold1 = replace_double_underscore(renaming_df, 'filename')
     renaming_df['filename']=hold1['filename']
 
