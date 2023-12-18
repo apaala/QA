@@ -25,6 +25,7 @@ logger = logging.getLogger('app.' + __name__)
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
+pd.options.mode.chained_assignment = None 
 
 def main():
     parser = argparse.ArgumentParser( description='User inputs to QA script')
@@ -685,7 +686,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
     #Flag for columns N/O/P check. This will skip the correctly formatted NYGC submission.
     NOP = None
     rename_3 = find_rows_with_extensions(manifest,'filename', ['.csv', '.xml'])
-    print(rename_3)
+    #print(rename_3)
     #Assumption: Only one Flowcell per manifest. Confirmed with Suvvi on 12/06/23
     flowcell = manifest['flow_cell_name'].unique()
     ###Checking for flowcell in NOP
@@ -695,7 +696,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
         #Detect unique values
         dsf_t = list(manifest.demultiplex_stats_filename.unique())
         dsf = [x for x in dsf_t if str(x) != 'nan']
-        print(dsf)
+        #print(dsf)
         rpf_t = list(manifest.run_parameters_filename.unique())
         rpf = [x for x in rpf_t if str(x) != 'nan']
         tubf_t = list(manifest.top_unknown_barcodes_filename.unique())
