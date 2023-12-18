@@ -87,20 +87,6 @@ def main():
     file_list = get_technique_file_list(options.technique, master_techniques)
     file_checks = check_tech_assoc_files(manifest, file_list, options.technique, unmatched_files)
     
-    #Renaming files below
-    updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
-    #fnx to rename the files
-    if options.rename and QA_flag== True:
-        rename_files(renaming_df, 'filename', 'updated_filename')
-        #print(updated_manifest)
-        #Write outputs
-        if options.updated_man:
-            updated_manifest.to_csv(options.updated_man, index=False, sep='\t')
-        else:
-            updated_manifest.to_csv('updated_manifest.txt', index=False, sep='\t')
-        #for sanity check writing old and new filenames, maybe include in log file later.
-        renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
-    
     #Check required files are present
     QA_flag = None
     #Log for overall printing
@@ -132,6 +118,21 @@ def main():
         QA_flag = False
         print(file_checks)
         print("QA Failed. Please check Table for details.")
+        
+    #Renaming files below
+    updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
+    #fnx to rename the files
+    if options.rename and QA_flag== True:
+        rename_files(renaming_df, 'filename', 'updated_filename')
+        #print(updated_manifest)
+        #Write outputs
+        if options.updated_man:
+            updated_manifest.to_csv(options.updated_man, index=False, sep='\t')
+        else:
+            updated_manifest.to_csv('updated_manifest.txt', index=False, sep='\t')
+        #for sanity check writing old and new filenames, maybe include in log file later.
+        renaming_df.to_csv('updated_filenames.txt', index=False, sep='\t')
+    
 
 
 
