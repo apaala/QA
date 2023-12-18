@@ -918,7 +918,7 @@ def find_files_without_extension(df, column_name, excluded_extension,prepend_col
                 return row[prepend_column] + '_' + file_name
         return file_name
 
-    df['non_fq'] = df.apply(rename_file, axis=1)
+    df.loc[:,'non_fq'] = df.apply(rename_file, axis=1)
     return df
 
     return df[df[column_name].apply(lambda x: not x.endswith('.' + excluded_extension))][column_name].tolist()
