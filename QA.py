@@ -880,7 +880,7 @@ def replace_double_underscore(df, column_name):
     :param column_name: The name of the column in which to replace double underscores.
     :return: DataFrame with the replacements made.
     """
-    df[column_name] = df[column_name].str.replace('__', '_', regex=False)
+    df.loc[:,column_name] = df[column_name].str.replace('__', '_', regex=False)
     return df
 
 
