@@ -124,7 +124,7 @@ def main():
     #Renaming files below
     updated_manifest, renaming_df = renaming_manifest_fastq(manifest, QA_flag, options.dir_path)
     #fnx to rename the files
-    if options.rename:
+    if options.rename and QA_flag== True:
         rename_files(renaming_df, 'filename', 'updated_filename')
         #print(updated_manifest)
         #Write outputs
