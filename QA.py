@@ -775,10 +775,10 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
     hold1 = prepend_directory_path(renaming_df, 'filename', dpath)
     renaming_df.loc[:,'filename']=hold1['filename']
     hold1 = replace_double_underscore(renaming_df, 'filename')
-    renaming_df['filename']=hold1['filename']
+    renaming_df.loc[:,'filename']=hold1['filename']
 
     hold2 = prepend_directory_path(renaming_df, 'updated_filename', dpath)
-    renaming_df['updated_filename']=hold2['updated_filename']
+    renaming_df.loc[:,'updated_filename']=hold2['updated_filename']
     #hold2 = replace_double_underscore(renaming_df, 'updated_filename')
     #renaming_df['updated_filename']=hold2['updated_filename']
     #renaming_df['updated_filename'] = replace_double_underscore(renaming_df, 'updated_filename')
@@ -786,7 +786,7 @@ def renaming_manifest_fastq(manifest, QA_flag, dpath):
     #print(renaming_df['updated_filename'])
     
 
-    manifest_copy['filename'] = updated_names['filename']
+    manifest_copy.loc[:,'filename'] = updated_names['filename']
     #drop extra columns
     manifest_copy.drop(['filename_Part1', 'filename_Part2', 'non_fq', 'updated_filename'], axis=1, inplace=True)
 
