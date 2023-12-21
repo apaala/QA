@@ -9,6 +9,8 @@ Steps:
 3. Check file md5sums
 4. Check if all required files for user prompted technique are present.
 5. Rename files to include flowcell
+6. Generate an updated manifest with new file names.
+Not implemented move to GCP yet.
 """
 
 import getopt, sys, os
@@ -28,6 +30,7 @@ pd.set_option('display.width', 1000)
 pd.options.mode.chained_assignment = None 
 
 def main():
+    ##User arguements
     parser = argparse.ArgumentParser( description='User inputs to QA script')
     parser.add_argument("-d", "--dir_path", dest="dir_path",help="Path to directory with files to be assessed", metavar="PATH")
     parser.add_argument("-m", "--manifest", dest="manifest_path",help="Full path to manifest file", metavar="FILE")
@@ -39,10 +42,9 @@ def main():
     parser.add_argument("-u", "--umanifest", dest="updated_man",help="Full path where you would like to direct the updated manifest file.", metavar="PATH")
     #Option to do renaming
     parser.add_argument("-r", "--rename", dest="rename",help="Flag to rename the files by adding flowcell name", action='store_true')
-
     options = parser.parse_args()
 
-    #Logging details
+    #Logging setup and details
     parent_path = Path(__file__).resolve().parent
     if options.log_dir:
         log_path = options.log_dir
@@ -60,7 +62,7 @@ def main():
     #List all files in the directory provided
     all_files = os.listdir(options.dir_path)
 
-    #Get matched and unmatched file names. Error if file in manifest not present in directory.
+    #Get matched and unmatched file names. Report if file in manifest not present in directory.
     matched_files, unmatched_files, missingfiles_flag= check_dir_vs_manifest(all_files, manifest)
 
     #Logging matches and mismatches
@@ -284,6 +286,20 @@ def check_I1_I2_fastq(lane_files, lane, missing_files):
     return(ext_req_checked)
 
 def check_R1_R2_R3_fastq(lane_files, lane):
+    """
+    #Untested! No dataset. Deprioritized. Add check for missing_files.
+
+    Check R1, R2 and R3 files for raw techniques. It checks if the naming is 
+    consistent and required files are present.
+
+    Parameters:
+    lane_files (pandas.DataFrame): DataFrame with files belonging to specific Lane.
+    lane (str): The name of the Lane for which files are being checked.
+    missing_files (str): DataFrame with missing files.
+
+    Returns:
+    pandas.DataFrame: Dataframe with results.
+    """
     #check for R1, R2 and R3 fastq files for raw 5 file techniques
     #check if required files are present
     required_files = pd.DataFrame()
@@ -308,6 +324,20 @@ def check_R1_R2_R3_fastq(lane_files, lane):
     return(ext_req_checked)
 
 def check_R1_R2_nuchash_fastq(lane_files, lane):
+    """
+    #Untested! No dataset. Deprioritized. Add check for missing_files.
+
+    Check R1, R2 files for nuchash techniques. It checks if the naming is 
+    consistent and required files are present.
+
+    Parameters:
+    lane_files (pandas.DataFrame): DataFrame with files belonging to specific Lane.
+    lane (str): The name of the Lane for which files are being checked.
+    missing_files (str): DataFrame with missing files.
+
+    Returns:
+    pandas.DataFrame: Dataframe with results.
+    """
     #check for R1, R2 and R3 fastq files for raw 5 file techniques
     #check if required files are present
     #incomplete. testing required.
@@ -333,6 +363,20 @@ def check_R1_R2_nuchash_fastq(lane_files, lane):
 
 
 def check_I1_or_I2_fastq(lane_files, lane):
+    """
+    #Untested! No dataset. Deprioritized. Add check for missing_files.
+
+    Check I1 or I2 files for 5 file submission techniques. It checks if the naming is 
+    consistent and required files are present.
+
+    Parameters:
+    lane_files (pandas.DataFrame): DataFrame with files belonging to specific Lane.
+    lane (str): The name of the Lane for which files are being checked.
+    missing_files (str): DataFrame with missing files.
+
+    Returns:
+    pandas.DataFrame: Dataframe with results.
+    """
     #check for I1 and I2 fastq files for raw techniques
     #check if optional files are present.If yes both have to present!
     required_files = pd.DataFrame()
@@ -363,10 +407,13 @@ def check_I1_or_I2_fastq(lane_files, lane):
 def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_files):
     """ This function checks for techniques that produce 4 files. 
     These Files are expected to have specific substrings.
-    Input: 1) List of expected files, 
+
+    Parameters: 
+           1) List of expected files, 
            2) Manifest for aliquot 
            3) aliquot string (not using currently may want to later.
            4) list of missing files.
+
     Output: DF with lane and T/F for required and optional files.
     """
     #ASSUMPTION! Every aliquot has 8 lanes that will be named in rthe format below. 
@@ -447,7 +494,8 @@ def check_raw_4_file_format_techniques(file_list, manifest, aliquot, missing_fil
     return(pd.DataFrame(lane_checks, columns = ["Lane", "Req", "Opt"]))
 
 def check_raw_3_hash_file_format_techniques(file_list, manifest, aliquot_files, missing_files):
-    """ This function checks for techniques that produce 5 files. 
+    """ 
+    This function checks for techniques that produce 5 files. 
     These Files are expected to have specific substrings.
     Input: 1) List of expected files, 
            2) Manifest for aliquot 
@@ -529,7 +577,10 @@ def check_raw_5_file_format_techniques(file_list, manifest, aliquot, missing_fil
 
 
 def check_tech_assoc_files(manifest, file_list, techniques, missing_files):
-    """ This function checks the technique and calls appropriate functions.
+    """ 
+    This function checks the technique and calls appropriate functions.
+    note- the goal of using a techniques file was to not need to have techniques 
+    in variables, but some assumptions no longer hold true so below was implemented.
     Input: 1) Manifest 
            2) File list
            3) Techniquees file.
