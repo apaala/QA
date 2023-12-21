@@ -4,6 +4,8 @@ QA script for checking submissions
 Outputs:
 -stdout with user logs
 -detailed log with more information useful for debugging.
+-updated manifest
+-renamed files.
 
 Inputs:
 Path to directory
@@ -11,6 +13,8 @@ Path to manifest
 Path to techniques and aliquot
 Optional: -s to skip checking md5sums.
 Optional: -l to pass full path to file you want logs written to
+Optional: -r to rename files
+Optional(recommended): -u path to updated manifest output file
 
 #NOTE: to pipe output to a file add -u after python like so:
 python -u QA.py *rest of the inputs*
